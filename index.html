@@ -36,19 +36,13 @@
 
   header {
     width: 100%;
-    max-width: 860px;
+    max-width: 960px;
     margin-bottom: 48px;
     border-bottom: 1px solid var(--border);
     padding-bottom: 24px;
   }
 
-  .header-top {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 8px;
-  }
-
+  .header-top { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
   h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
 
   .tag {
@@ -65,8 +59,9 @@
 
   .subtitle { font-size: 0.875rem; color: var(--muted); font-weight: 400; }
 
-  main { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 24px; }
+  main { width: 100%; max-width: 960px; display: flex; flex-direction: column; gap: 24px; }
 
+  /* Drop zone */
   .drop-zone {
     border: 2px dashed var(--border);
     border-radius: 8px;
@@ -77,247 +72,129 @@
     position: relative;
     background: var(--surface);
   }
-
-  .drop-zone:hover, .drop-zone.dragover {
-    border-color: var(--accent);
-    background: #1e2410;
-  }
-
-  .drop-zone input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: #1e2410; }
+  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .drop-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
   .drop-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
   .drop-hint { font-size: 0.8rem; color: var(--muted); font-family: 'DM Mono', monospace; }
 
-  .file-info {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 20px;
-  }
+  /* File info */
+  .file-info { display: none; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; }
   .file-info.visible { display: flex; }
-
-  .file-name {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--accent);
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
+  .file-name { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--accent); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .file-pages { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; white-space: nowrap; }
-
-  .btn-clear {
-    background: none;
-    border: none;
-    color: var(--danger);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: background 0.15s;
-  }
+  .btn-clear { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; transition: background 0.15s; }
   .btn-clear:hover { background: rgba(255,77,77,0.1); }
 
+  /* Controls */
   .controls { display: flex; gap: 12px; align-items: center; }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    padding: 14px 28px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    letter-spacing: 0.02em;
-    flex: 1;
-  }
+  .btn-primary { background: var(--accent); color: #000; border: none; border-radius: 6px; padding: 14px 28px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; letter-spacing: 0.02em; flex: 1; }
   .btn-primary:hover:not(:disabled) { background: #d6ff3f; transform: translateY(-1px); }
-  .btn-primary:active:not(:disabled) { transform: translateY(0); }
   .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  .btn-secondary {
-    background: none;
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 14px 22px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    white-space: nowrap;
-  }
+  .btn-secondary { background: none; color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 14px 22px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s; white-space: nowrap; }
   .btn-secondary:hover:not(:disabled) { border-color: var(--accent); background: rgba(200,241,53,0.05); }
   .btn-secondary:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  .progress-box {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-  }
+  /* Progress */
+  .progress-box { display: none; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
   .progress-box.visible { display: flex; }
-
   .progress-header { display: flex; justify-content: space-between; align-items: center; }
   .progress-label { font-size: 0.8rem; color: var(--muted); font-family: 'DM Mono', monospace; }
   .progress-count { font-size: 0.8rem; color: var(--accent); font-family: 'DM Mono', monospace; font-weight: 500; }
-
   .progress-bar-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .progress-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.2s ease;
-    width: 0%;
-  }
-
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.2s ease; width: 0%; }
   .progress-status { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
 
-  .results-box {
-    display: none;
-    flex-direction: column;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
+  /* Error / Warning */
+  .error-box { display: none; align-items: flex-start; gap: 12px; background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: 8px; padding: 16px 20px; }
+  .error-box.visible { display: flex; }
+  .error-text { font-size: 0.82rem; color: #ff9999; font-family: 'DM Mono', monospace; line-height: 1.6; white-space: pre-line; }
+  .warning-box { display: none; align-items: flex-start; gap: 12px; background: rgba(255,200,50,0.08); border: 1px solid rgba(255,200,50,0.3); border-radius: 8px; padding: 14px 18px; }
+  .warning-box.visible { display: flex; }
+  .warning-text { font-size: 0.8rem; color: #ffd080; font-family: 'DM Mono', monospace; line-height: 1.6; white-space: pre-line; }
+
+  /* Results header */
+  .results-box { display: none; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .results-box.visible { display: flex; }
 
-  .results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-  }
-
-  .results-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .results-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    background: var(--success);
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-weight: 500;
-  }
-
+  .results-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-wrap: wrap; gap: 12px; }
+  .results-title { font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .results-badge { font-family: 'DM Mono', monospace; font-size: 0.7rem; background: var(--success); color: #000; padding: 2px 8px; border-radius: 2px; font-weight: 500; }
   .results-actions { display: flex; gap: 8px; }
-
-  .btn-mini {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 4px;
-    padding: 6px 14px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
+  .btn-mini { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 6px 14px; font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
   .btn-mini:hover { border-color: var(--accent); color: var(--accent); }
   .btn-mini.excel { background: var(--accent); border-color: var(--accent); color: #000; }
   .btn-mini.excel:hover { background: #d6ff3f; }
 
-  .code-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    max-height: 420px;
-    overflow-y: auto;
-  }
-  .code-grid::-webkit-scrollbar { width: 6px; }
-  .code-grid::-webkit-scrollbar-track { background: var(--surface); }
-  .code-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  /* Pages list */
+  .pages-list { display: flex; flex-direction: column; gap: 0; max-height: 560px; overflow-y: auto; }
+  .pages-list::-webkit-scrollbar { width: 6px; }
+  .pages-list::-webkit-scrollbar-track { background: var(--surface); }
+  .pages-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-  .code-cell {
-    background: var(--surface);
-    padding: 12px 14px;
+  .page-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-row:last-child { border-bottom: none; }
+
+  .page-label {
     font-family: 'DM Mono', monospace;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.1s;
-  }
-  .code-cell:hover { background: var(--surface2); }
-
-  .code-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0.5;
-    flex-shrink: 0;
-  }
-
-  .results-footer {
-    padding: 12px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 24px;
+    color: var(--muted);
     background: var(--surface2);
+    padding: 14px 16px;
+    min-width: 90px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    position: sticky;
+    left: 0;
   }
 
+  .page-num { color: var(--accent); font-size: 0.95rem; font-weight: 700; }
+  .page-count-badge { font-size: 0.65rem; color: var(--muted); }
+
+  .page-codes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    flex: 1;
+    align-items: center;
+  }
+
+  .code-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    transition: border-color 0.1s, color 0.1s;
+  }
+  .code-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  .no-codes {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--border);
+    padding: 4px 0;
+    font-style: italic;
+  }
+
+  /* Summary footer */
+  .results-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 32px; background: var(--surface2); flex-wrap: wrap; }
   .stat { display: flex; flex-direction: column; gap: 2px; }
   .stat-val { font-size: 1.1rem; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; }
   .stat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-
-  .error-box {
-    display: none;
-    align-items: flex-start;
-    gap: 12px;
-    background: rgba(255,77,77,0.08);
-    border: 1px solid rgba(255,77,77,0.3);
-    border-radius: 8px;
-    padding: 16px 20px;
-  }
-  .error-box.visible { display: flex; }
-  .error-icon { font-size: 1.2rem; flex-shrink: 0; }
-  .error-text { font-size: 0.82rem; color: #ff9999; font-family: 'DM Mono', monospace; line-height: 1.5; }
-
-  .warning-box {
-    display: none;
-    align-items: flex-start;
-    gap: 12px;
-    background: rgba(255,200,50,0.08);
-    border: 1px solid rgba(255,200,50,0.3);
-    border-radius: 8px;
-    padding: 14px 18px;
-  }
-  .warning-box.visible { display: flex; }
-  .warning-text { font-size: 0.8rem; color: #ffd080; font-family: 'DM Mono', monospace; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -327,7 +204,7 @@
     <h1>Extractor de Códigos</h1>
     <span class="tag">Catálogos PDF</span>
   </div>
-  <p class="subtitle">Sube un PDF de catálogo → extrae todos los códigos → descarga Excel listo para usar</p>
+  <p class="subtitle">Sube un PDF de catálogo → extrae los códigos por página → descarga Excel listo para usar</p>
 </header>
 
 <main>
@@ -363,39 +240,41 @@
   </div>
 
   <div class="error-box" id="errorBox">
-    <span class="error-icon">⚠️</span>
+    <span style="font-size:1.2rem;flex-shrink:0">⚠️</span>
     <span class="error-text" id="errorText"></span>
   </div>
 
   <div class="warning-box" id="warningBox">
-    <span class="error-icon">💡</span>
+    <span style="font-size:1.2rem;flex-shrink:0">💡</span>
     <span class="warning-text" id="warningText"></span>
   </div>
 
   <div class="results-box" id="resultsBox">
     <div class="results-header">
       <div class="results-title">
-        Códigos encontrados
-        <span class="results-badge" id="totalBadge">0</span>
+        Códigos por página
+        <span class="results-badge" id="totalBadge">0 códigos</span>
       </div>
       <div class="results-actions">
-        <button class="btn-mini" id="btnCopy">Copiar lista</button>
+        <button class="btn-mini" id="btnCopy">Copiar todo</button>
         <button class="btn-mini excel" id="btnExcel2">↓ Excel</button>
       </div>
     </div>
-    <div class="code-grid" id="codeGrid"></div>
+
+    <div class="pages-list" id="pagesList"></div>
+
     <div class="results-footer">
       <div class="stat">
         <span class="stat-val" id="statCodes">0</span>
-        <span class="stat-label">Códigos únicos</span>
+        <span class="stat-label">Códigos totales</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="statPagesWithCodes">0</span>
+        <span class="stat-label">Páginas con códigos</span>
       </div>
       <div class="stat">
         <span class="stat-val" id="statPages">0</span>
         <span class="stat-label">Páginas analizadas</span>
-      </div>
-      <div class="stat">
-        <span class="stat-val" id="statDupes">0</span>
-        <span class="stat-label">Duplicados removidos</span>
       </div>
     </div>
   </div>
@@ -406,33 +285,33 @@
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
   let pdfFile = null;
-  let extractedCodes = [];
-  let totalPagesCount = 0;
+  // pageResults = [ { page: N, codes: ['1234', ...] }, ... ]
+  let pageResults = [];
 
-  const dropZone    = document.getElementById('dropZone');
-  const fileInput   = document.getElementById('fileInput');
-  const fileInfo    = document.getElementById('fileInfo');
-  const fileName    = document.getElementById('fileName');
-  const filePages   = document.getElementById('filePages');
-  const btnClear    = document.getElementById('btnClear');
-  const btnExtract  = document.getElementById('btnExtract');
-  const btnExcel    = document.getElementById('btnExcel');
-  const btnExcel2   = document.getElementById('btnExcel2');
-  const btnCopy     = document.getElementById('btnCopy');
+  const dropZone      = document.getElementById('dropZone');
+  const fileInput     = document.getElementById('fileInput');
+  const fileInfo      = document.getElementById('fileInfo');
+  const fileName      = document.getElementById('fileName');
+  const filePages     = document.getElementById('filePages');
+  const btnClear      = document.getElementById('btnClear');
+  const btnExtract    = document.getElementById('btnExtract');
+  const btnExcel      = document.getElementById('btnExcel');
+  const btnExcel2     = document.getElementById('btnExcel2');
+  const btnCopy       = document.getElementById('btnCopy');
   const progressBox   = document.getElementById('progressBox');
   const progressCount = document.getElementById('progressCount');
   const progressFill  = document.getElementById('progressFill');
   const progressStatus= document.getElementById('progressStatus');
-  const errorBox    = document.getElementById('errorBox');
-  const errorText   = document.getElementById('errorText');
-  const warningBox  = document.getElementById('warningBox');
-  const warningText = document.getElementById('warningText');
-  const resultsBox  = document.getElementById('resultsBox');
-  const totalBadge  = document.getElementById('totalBadge');
-  const codeGrid    = document.getElementById('codeGrid');
-  const statCodes   = document.getElementById('statCodes');
-  const statPages   = document.getElementById('statPages');
-  const statDupes   = document.getElementById('statDupes');
+  const errorBox      = document.getElementById('errorBox');
+  const errorText     = document.getElementById('errorText');
+  const warningBox    = document.getElementById('warningBox');
+  const warningText   = document.getElementById('warningText');
+  const resultsBox    = document.getElementById('resultsBox');
+  const totalBadge    = document.getElementById('totalBadge');
+  const pagesList     = document.getElementById('pagesList');
+  const statCodes         = document.getElementById('statCodes');
+  const statPagesWithCodes= document.getElementById('statPagesWithCodes');
+  const statPages         = document.getElementById('statPages');
 
   // Drag & drop
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -444,37 +323,28 @@
     if (f && f.type === 'application/pdf') loadFile(f);
     else showError('Solo se aceptan archivos PDF (.pdf)');
   });
-
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files[0]) loadFile(fileInput.files[0]);
-  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
 
   async function loadFile(f) {
     pdfFile = f;
+    pageResults = [];
     fileName.textContent = f.name;
     fileInfo.classList.add('visible');
     hideAll();
     btnExtract.disabled = false;
     btnExcel.disabled = true;
-    extractedCodes = [];
 
     try {
       const ab = await f.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
-      totalPagesCount = pdf.numPages;
-      filePages.textContent = totalPagesCount + ' página' + (totalPagesCount !== 1 ? 's' : '');
-    } catch(e) {
-      filePages.textContent = '';
-    }
+      filePages.textContent = pdf.numPages + ' página' + (pdf.numPages !== 1 ? 's' : '');
+    } catch(e) { filePages.textContent = ''; }
   }
 
   btnClear.addEventListener('click', () => {
-    pdfFile = null;
-    extractedCodes = [];
-    fileInput.value = '';
+    pdfFile = null; pageResults = []; fileInput.value = '';
     fileInfo.classList.remove('visible');
-    btnExtract.disabled = true;
-    btnExcel.disabled = true;
+    btnExtract.disabled = true; btnExcel.disabled = true;
     hideAll();
   });
 
@@ -483,17 +353,17 @@
   btnExcel2.addEventListener('click', downloadExcel);
 
   btnCopy.addEventListener('click', () => {
-    navigator.clipboard.writeText(extractedCodes.join('\n')).then(() => {
+    const lines = pageResults
+      .filter(r => r.codes.length > 0)
+      .map(r => 'Pág ' + r.page + ': ' + r.codes.join(', '))
+      .join('\n');
+    navigator.clipboard.writeText(lines).then(() => {
       btnCopy.textContent = '✓ Copiado';
-      setTimeout(() => btnCopy.textContent = 'Copiar lista', 2000);
+      setTimeout(() => btnCopy.textContent = 'Copiar todo', 2000);
     });
   });
 
-  // ── Patrones de extracción ──────────────────────────────────────────────────
-  // Cubre variantes comunes en PDFs de catálogos:
-  //   "Código: 5437"   "Código:5437"   "Código : 5437"
-  //   "CÓDIGO: 28720"  "codigo:30459"  "Código\n5437"
-  // Captura números de 4 a 6 dígitos
+  // Regex: "Código:" seguido de 4-6 dígitos, tolerante a espacios y variantes
   const CODE_REGEX = /[Cc][Óó][Dd][Ii][Gg][Oo]\s*:?\s*(\d{4,6})/g;
 
   function extractCodesFromText(text) {
@@ -508,13 +378,11 @@
 
   async function runExtraction() {
     if (!pdfFile) return;
-
     hideAll();
     btnExtract.disabled = true;
     btnExcel.disabled = true;
     progressBox.classList.add('visible');
-
-    const allRaw = [];
+    pageResults = [];
 
     try {
       const ab = await pdfFile.arrayBuffer();
@@ -522,35 +390,32 @@
       const total = pdf.numPages;
 
       for (let p = 1; p <= total; p++) {
-        progressStatus.textContent = 'Procesando página ' + p + '…';
+        progressStatus.textContent = 'Procesando página ' + p + ' de ' + total + '…';
         progressCount.textContent = p + ' / ' + total;
         progressFill.style.width = Math.round((p / total) * 100) + '%';
 
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
+        const text = content.items.map(i => i.str).join(' ');
+        const codes = extractCodesFromText(text);
 
-        // Reconstruir texto respetando saltos de línea entre items
-        const pageText = content.items.map(i => i.str).join(' ');
-        const codes = extractCodesFromText(pageText);
-        allRaw.push(...codes);
+        pageResults.push({ page: p, codes: codes });
       }
 
       progressBox.classList.remove('visible');
 
-      const rawCount = allRaw.length;
-      const unique = [...new Set(allRaw.map(c => c.trim()))].sort((a, b) => Number(a) - Number(b));
-      extractedCodes = unique;
+      const totalCodes = pageResults.reduce((s, r) => s + r.codes.length, 0);
 
-      if (unique.length === 0) {
+      if (totalCodes === 0) {
         showWarning(
           'No se encontraron códigos en este PDF.\n\n' +
           'Posibles causas:\n' +
-          '• El PDF es una imagen escaneada (no tiene texto seleccionable)\n' +
+          '• El PDF es una imagen escaneada (sin texto seleccionable)\n' +
           '• Los códigos usan un formato diferente al esperado\n\n' +
-          'Prueba seleccionando texto en el PDF con el cursor. Si no puedes, es un PDF escaneado.'
+          'Prueba seleccionar texto en el PDF con el cursor. Si no puedes, es un PDF escaneado.'
         );
       } else {
-        showResults(unique, total, rawCount - unique.length);
+        showResults(pageResults, total, totalCodes);
         btnExcel.disabled = false;
       }
 
@@ -562,46 +427,86 @@
     }
   }
 
-  function showResults(codes, pages, dupes) {
+  function showResults(results, totalPages, totalCodes) {
     resultsBox.classList.add('visible');
-    totalBadge.textContent = codes.length;
-    statCodes.textContent  = codes.length;
-    statPages.textContent  = pages;
-    statDupes.textContent  = dupes;
+    const pagesWithCodes = results.filter(r => r.codes.length > 0).length;
 
-    codeGrid.innerHTML = '';
-    codes.forEach(c => {
-      const cell = document.createElement('div');
-      cell.className = 'code-cell';
-      cell.innerHTML = '<span class="code-dot"></span>' + c;
-      codeGrid.appendChild(cell);
+    totalBadge.textContent = totalCodes + ' código' + (totalCodes !== 1 ? 's' : '');
+    statCodes.textContent = totalCodes;
+    statPagesWithCodes.textContent = pagesWithCodes;
+    statPages.textContent = totalPages;
+
+    pagesList.innerHTML = '';
+
+    results.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'page-row';
+
+      const label = document.createElement('div');
+      label.className = 'page-label';
+      label.innerHTML =
+        '<span class="page-num">Pág ' + r.page + '</span>' +
+        '<span class="page-count-badge">' +
+          (r.codes.length > 0 ? r.codes.length + ' cód.' : 'sin códigos') +
+        '</span>';
+
+      const codesDiv = document.createElement('div');
+      codesDiv.className = 'page-codes';
+
+      if (r.codes.length === 0) {
+        const empty = document.createElement('span');
+        empty.className = 'no-codes';
+        empty.textContent = '—';
+        codesDiv.appendChild(empty);
+      } else {
+        r.codes.forEach(c => {
+          const chip = document.createElement('span');
+          chip.className = 'code-chip';
+          chip.textContent = c;
+          codesDiv.appendChild(chip);
+        });
+      }
+
+      row.appendChild(label);
+      row.appendChild(codesDiv);
+      pagesList.appendChild(row);
     });
   }
 
   function downloadExcel() {
-    if (!extractedCodes.length) return;
+    if (!pageResults.length) return;
 
-    const rows = [['Código']].concat(extractedCodes.map(c => [c]));
+    // Construir filas: encabezado + una fila por cada código
+    const rows = [['Página', 'Código']];
+
+    pageResults.forEach(r => {
+      if (r.codes.length === 0) {
+        rows.push(['Pág ' + r.page, '']);
+      } else {
+        r.codes.forEach(c => {
+          rows.push(['Pág ' + r.page, c]);
+        });
+      }
+    });
+
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{ wch: 15 }];
+
+    // Anchos de columna
+    ws['!cols'] = [{ wch: 12 }, { wch: 14 }];
+
+    // Negrita en encabezado
+    if (ws['A1']) ws['A1'].s = { font: { bold: true } };
+    if (ws['B1']) ws['B1'].s = { font: { bold: true } };
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Códigos');
+    XLSX.utils.book_append_sheet(wb, ws, 'Códigos por Página');
 
     const safeName = (pdfFile ? pdfFile.name : 'catalogo').replace(/\.pdf$/i, '');
     XLSX.writeFile(wb, 'codigos_' + safeName + '.xlsx');
   }
 
-  function showError(msg) {
-    errorBox.classList.add('visible');
-    errorText.textContent = msg;
-  }
-
-  function showWarning(msg) {
-    warningBox.classList.add('visible');
-    warningText.textContent = msg;
-  }
-
+  function showError(msg) { errorBox.classList.add('visible'); errorText.textContent = msg; }
+  function showWarning(msg) { warningBox.classList.add('visible'); warningText.textContent = msg; }
   function hideAll() {
     progressBox.classList.remove('visible');
     errorBox.classList.remove('visible');
