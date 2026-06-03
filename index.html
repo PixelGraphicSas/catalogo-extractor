@@ -6,6 +6,7 @@
 <title>Extractor de Códigos — Catálogos</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="config.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
 
@@ -19,6 +20,9 @@
     --muted: #777;
     --danger: #ff4d4d;
     --success: #4dffb8;
+    --warning-bg: rgba(255,200,50,0.08);
+    --warning-border: rgba(255,200,50,0.3);
+    --warning-text: #ffd080;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,7 +35,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px 60px;
+    padding: 40px 20px 80px;
   }
 
   header {
@@ -40,8 +44,14 @@
     margin-bottom: 48px;
     border-bottom: 1px solid var(--border);
     padding-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
   }
 
+  .header-left {}
   .header-top { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
   h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
 
@@ -59,13 +69,72 @@
 
   .subtitle { font-size: 0.875rem; color: var(--muted); font-weight: 400; }
 
-  main { width: 100%; max-width: 960px; display: flex; flex-direction: column; gap: 24px; }
+  /* Auth button */
+  .btn-auth {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-auth:hover { border-color: var(--accent); }
+  .btn-auth.connected { border-color: var(--success); color: var(--success); }
+  .btn-auth .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .btn-auth.connected .dot { background: var(--success); }
+
+  main { width: 100%; max-width: 960px; display: flex; flex-direction: column; gap: 32px; }
+
+  /* Step wrapper */
+  .step {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-num.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .step-num.done { background: var(--success); border-color: var(--success); color: #000; }
+
+  .step-title { font-size: 1rem; font-weight: 700; }
+  .step-desc { font-size: 0.8rem; color: var(--muted); }
+
+  .step-divider { border: none; border-top: 1px dashed var(--border); margin: 0; }
 
   /* Drop zone */
   .drop-zone {
     border: 2px dashed var(--border);
     border-radius: 8px;
-    padding: 48px 32px;
+    padding: 44px 32px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
@@ -74,9 +143,9 @@
   }
   .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: #1e2410; }
   .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .drop-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
-  .drop-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
-  .drop-hint { font-size: 0.8rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .drop-icon { font-size: 2.2rem; margin-bottom: 10px; display: block; }
+  .drop-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .drop-hint { font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
 
   /* File info */
   .file-info { display: none; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; }
@@ -86,433 +155,808 @@
   .btn-clear { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; transition: background 0.15s; }
   .btn-clear:hover { background: rgba(255,77,77,0.1); }
 
-  /* Controls */
+  /* Controls row */
   .controls { display: flex; gap: 12px; align-items: center; }
-  .btn-primary { background: var(--accent); color: #000; border: none; border-radius: 6px; padding: 14px 28px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; letter-spacing: 0.02em; flex: 1; }
+  .btn-primary { background: var(--accent); color: #000; border: none; border-radius: 6px; padding: 13px 28px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; flex: 1; }
   .btn-primary:hover:not(:disabled) { background: #d6ff3f; transform: translateY(-1px); }
   .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-secondary { background: none; color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 14px 22px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s; white-space: nowrap; }
-  .btn-secondary:hover:not(:disabled) { border-color: var(--accent); background: rgba(200,241,53,0.05); }
+  .btn-secondary { background: none; color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 13px 22px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s; white-space: nowrap; }
+  .btn-secondary:hover:not(:disabled) { border-color: var(--accent); }
   .btn-secondary:disabled { opacity: 0.35; cursor: not-allowed; }
 
   /* Progress */
-  .progress-box { display: none; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .progress-box { display: none; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
   .progress-box.visible { display: flex; }
-  .progress-header { display: flex; justify-content: space-between; align-items: center; }
-  .progress-label { font-size: 0.8rem; color: var(--muted); font-family: 'DM Mono', monospace; }
-  .progress-count { font-size: 0.8rem; color: var(--accent); font-family: 'DM Mono', monospace; font-weight: 500; }
+  .progress-header { display: flex; justify-content: space-between; }
+  .progress-label { font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .progress-count { font-size: 0.78rem; color: var(--accent); font-family: 'DM Mono', monospace; font-weight: 500; }
   .progress-bar-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.2s ease; width: 0%; }
-  .progress-status { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.2s; width: 0%; }
+  .progress-status { font-size: 0.73rem; color: var(--muted); font-family: 'DM Mono', monospace; }
 
-  /* Error / Warning */
-  .error-box { display: none; align-items: flex-start; gap: 12px; background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: 8px; padding: 16px 20px; }
-  .error-box.visible { display: flex; }
-  .error-text { font-size: 0.82rem; color: #ff9999; font-family: 'DM Mono', monospace; line-height: 1.6; white-space: pre-line; }
-  .warning-box { display: none; align-items: flex-start; gap: 12px; background: rgba(255,200,50,0.08); border: 1px solid rgba(255,200,50,0.3); border-radius: 8px; padding: 14px 18px; }
-  .warning-box.visible { display: flex; }
-  .warning-text { font-size: 0.8rem; color: #ffd080; font-family: 'DM Mono', monospace; line-height: 1.6; white-space: pre-line; }
+  /* Alerts */
+  .alert { display: none; align-items: flex-start; gap: 12px; border-radius: 8px; padding: 14px 18px; }
+  .alert.visible { display: flex; }
+  .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .alert-text { font-size: 0.8rem; font-family: 'DM Mono', monospace; line-height: 1.6; white-space: pre-line; }
+  .alert.error { background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); }
+  .alert.error .alert-text { color: #ff9999; }
+  .alert.warning { background: var(--warning-bg); border: 1px solid var(--warning-border); }
+  .alert.warning .alert-text { color: var(--warning-text); }
 
-  /* Results header */
+  /* Step 1 Results — pages list */
   .results-box { display: none; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .results-box.visible { display: flex; }
-
-  .results-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-wrap: wrap; gap: 12px; }
-  .results-title { font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-  .results-badge { font-family: 'DM Mono', monospace; font-size: 0.7rem; background: var(--success); color: #000; padding: 2px 8px; border-radius: 2px; font-weight: 500; }
+  .results-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-wrap: wrap; gap: 10px; }
+  .results-title { font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .badge { font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 2px 8px; border-radius: 2px; font-weight: 500; }
+  .badge.green { background: var(--success); color: #000; }
+  .badge.accent { background: var(--accent); color: #000; }
   .results-actions { display: flex; gap: 8px; }
-  .btn-mini { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 6px 14px; font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-mini { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 5px 12px; font-family: 'Syne', sans-serif; font-size: 0.73rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
   .btn-mini:hover { border-color: var(--accent); color: var(--accent); }
   .btn-mini.excel { background: var(--accent); border-color: var(--accent); color: #000; }
   .btn-mini.excel:hover { background: #d6ff3f; }
 
-  /* Pages list */
-  .pages-list { display: flex; flex-direction: column; gap: 0; max-height: 560px; overflow-y: auto; }
-  .pages-list::-webkit-scrollbar { width: 6px; }
-  .pages-list::-webkit-scrollbar-track { background: var(--surface); }
+  .pages-list { display: flex; flex-direction: column; max-height: 380px; overflow-y: auto; }
+  .pages-list::-webkit-scrollbar { width: 5px; }
   .pages-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-  .page-row {
+  .page-row { display: flex; align-items: flex-start; border-bottom: 1px solid var(--border); }
+  .page-row:last-child { border-bottom: none; }
+  .page-label { font-family: 'DM Mono', monospace; font-size: 0.73rem; font-weight: 500; color: var(--muted); background: var(--surface2); padding: 12px 14px; min-width: 86px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 3px; }
+  .page-num { color: var(--accent); font-size: 0.88rem; font-weight: 700; }
+  .page-count-badge { font-size: 0.62rem; color: var(--muted); }
+  .page-codes { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; flex: 1; align-items: center; }
+  .code-chip { font-family: 'DM Mono', monospace; font-size: 0.8rem; font-weight: 500; color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; }
+  .no-codes { font-family: 'DM Mono', monospace; font-size: 0.73rem; color: var(--border); }
+
+  .results-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 28px; background: var(--surface2); flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-val { font-size: 1rem; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; }
+  .stat-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── STEP 2 ── */
+  .folder-row {
     display: flex;
-    align-items: flex-start;
-    gap: 0;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+
+  .folder-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+  .folder-id-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    outline: none;
+    min-width: 0;
+  }
+  .folder-id-input::placeholder { color: var(--muted); }
+
+  .folder-label { font-size: 0.7rem; color: var(--muted); font-family: 'DM Mono', monospace; white-space: nowrap; }
+
+  .btn-search {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 13px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+  }
+  .btn-search:hover:not(:disabled) { background: #d6ff3f; transform: translateY(-1px); }
+  .btn-search:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* Search results */
+  .search-results {
+    display: none;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .search-results.visible { display: flex; }
+
+  /* KPI cards */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
     border-bottom: 1px solid var(--border);
   }
-  .page-row:last-child { border-bottom: none; }
 
-  .page-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--muted);
+  .kpi-card {
     background: var(--surface2);
-    padding: 14px 16px;
-    min-width: 90px;
-    border-right: 1px solid var(--border);
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    align-items: flex-start;
-    position: sticky;
-    left: 0;
   }
 
-  .page-num { color: var(--accent); font-size: 0.95rem; font-weight: 700; }
-  .page-count-badge { font-size: 0.65rem; color: var(--muted); }
+  .kpi-val { font-size: 1.6rem; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .kpi-val.green { color: var(--success); }
+  .kpi-val.red { color: var(--danger); }
+  .kpi-val.accent { color: var(--accent); }
+  .kpi-val.muted { color: var(--muted); }
+  .kpi-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
 
-  .page-codes {
+  /* Found / not found lists */
+  .sr-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: var(--border);
+    max-height: 360px;
+    overflow: hidden;
+  }
+
+  .sr-col { background: var(--surface); display: flex; flex-direction: column; overflow: hidden; }
+  .sr-col-header { padding: 10px 16px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .sr-col-header.found { color: var(--success); }
+  .sr-col-header.notfound { color: var(--danger); }
+  .sr-col-list { overflow-y: auto; flex: 1; }
+  .sr-col-list::-webkit-scrollbar { width: 4px; }
+  .sr-col-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .sr-item {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 16px;
-    flex: 1;
     align-items: center;
-  }
-
-  .code-chip {
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
     font-family: 'DM Mono', monospace;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 10px;
-    transition: border-color 0.1s, color 0.1s;
+    font-size: 0.8rem;
   }
-  .code-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .sr-item:last-child { border-bottom: none; }
+  .sr-item.found { color: var(--text); }
+  .sr-item.notfound { color: var(--muted); }
+  .sr-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .sr-dot.found { background: var(--success); }
+  .sr-dot.notfound { background: var(--danger); opacity: 0.5; }
+  .sr-page { font-size: 0.65rem; color: var(--muted); margin-left: auto; }
 
-  .no-codes {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--border);
-    padding: 4px 0;
-    font-style: italic;
+  .sr-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; background: var(--surface2); }
+
+  @media (max-width: 600px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .sr-body { grid-template-columns: 1fr; max-height: none; }
   }
-
-  /* Summary footer */
-  .results-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 32px; background: var(--surface2); flex-wrap: wrap; }
-  .stat { display: flex; flex-direction: column; gap: 2px; }
-  .stat-val { font-size: 1.1rem; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; }
-  .stat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-top">
-    <h1>Extractor de Códigos</h1>
-    <span class="tag">Catálogos PDF</span>
+  <div class="header-left">
+    <div class="header-top">
+      <h1>Extractor de Códigos</h1>
+      <span class="tag">Catálogos PDF</span>
+    </div>
+    <p class="subtitle">Extrae códigos de catálogos PDF y búscalos en Google Drive</p>
   </div>
-  <p class="subtitle">Sube un PDF de catálogo → extrae los códigos por página → descarga Excel listo para usar</p>
+  <button class="btn-auth" id="btnAuth">
+    <span class="dot"></span>
+    <span id="authLabel">Conectar con Google</span>
+  </button>
 </header>
 
 <main>
 
-  <div class="drop-zone" id="dropZone">
-    <input type="file" accept=".pdf" id="fileInput">
-    <span class="drop-icon">📄</span>
-    <div class="drop-title">Arrastra el PDF aquí o haz clic para seleccionar</div>
-    <div class="drop-hint">Solo archivos .pdf</div>
-  </div>
-
-  <div class="file-info" id="fileInfo">
-    <span style="font-size:1rem">📋</span>
-    <span class="file-name" id="fileName"></span>
-    <span class="file-pages" id="filePages"></span>
-    <button class="btn-clear" id="btnClear" title="Quitar archivo">✕</button>
-  </div>
-
-  <div class="controls">
-    <button class="btn-primary" id="btnExtract" disabled>Extraer Códigos</button>
-    <button class="btn-secondary" id="btnExcel" disabled>↓ Descargar Excel</button>
-  </div>
-
-  <div class="progress-box" id="progressBox">
-    <div class="progress-header">
-      <span class="progress-label">Analizando páginas…</span>
-      <span class="progress-count" id="progressCount">0 / 0</span>
-    </div>
-    <div class="progress-bar-track">
-      <div class="progress-bar-fill" id="progressFill"></div>
-    </div>
-    <div class="progress-status" id="progressStatus">Preparando…</div>
-  </div>
-
-  <div class="error-box" id="errorBox">
-    <span style="font-size:1.2rem;flex-shrink:0">⚠️</span>
-    <span class="error-text" id="errorText"></span>
-  </div>
-
-  <div class="warning-box" id="warningBox">
-    <span style="font-size:1.2rem;flex-shrink:0">💡</span>
-    <span class="warning-text" id="warningText"></span>
-  </div>
-
-  <div class="results-box" id="resultsBox">
-    <div class="results-header">
-      <div class="results-title">
-        Códigos por página
-        <span class="results-badge" id="totalBadge">0 códigos</span>
-      </div>
-      <div class="results-actions">
-        <button class="btn-mini" id="btnCopy">Copiar todo</button>
-        <button class="btn-mini excel" id="btnExcel2">↓ Excel</button>
+  <!-- ══════════════════════════════════════════════════════ PASO 1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num active" id="step1Num">1</div>
+      <div>
+        <div class="step-title">Extraer códigos del PDF</div>
+        <div class="step-desc">Sube el catálogo y extrae los códigos de cada página</div>
       </div>
     </div>
 
-    <div class="pages-list" id="pagesList"></div>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" accept=".pdf" id="fileInput">
+      <span class="drop-icon">📄</span>
+      <div class="drop-title">Arrastra el PDF aquí o haz clic para seleccionar</div>
+      <div class="drop-hint">Solo archivos .pdf</div>
+    </div>
 
-    <div class="results-footer">
-      <div class="stat">
-        <span class="stat-val" id="statCodes">0</span>
-        <span class="stat-label">Códigos totales</span>
+    <div class="file-info" id="fileInfo">
+      <span style="font-size:1rem">📋</span>
+      <span class="file-name" id="fileName"></span>
+      <span class="file-pages" id="filePages"></span>
+      <button class="btn-clear" id="btnClear">✕</button>
+    </div>
+
+    <div class="controls">
+      <button class="btn-primary" id="btnExtract" disabled>Extraer Códigos</button>
+      <button class="btn-secondary" id="btnExcel" disabled>↓ Excel</button>
+    </div>
+
+    <div class="progress-box" id="progressBox1">
+      <div class="progress-header">
+        <span class="progress-label">Analizando páginas…</span>
+        <span class="progress-count" id="progressCount1">0 / 0</span>
       </div>
-      <div class="stat">
-        <span class="stat-val" id="statPagesWithCodes">0</span>
-        <span class="stat-label">Páginas con códigos</span>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill1"></div></div>
+      <div class="progress-status" id="progressStatus1">Preparando…</div>
+    </div>
+
+    <div class="alert error" id="errorBox1">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-text" id="errorText1"></span>
+    </div>
+    <div class="alert warning" id="warningBox1">
+      <span class="alert-icon">💡</span>
+      <span class="alert-text" id="warningText1"></span>
+    </div>
+
+    <div class="results-box" id="resultsBox1">
+      <div class="results-header">
+        <div class="results-title">
+          Códigos por página
+          <span class="badge green" id="totalBadge1">0 códigos</span>
+        </div>
+        <div class="results-actions">
+          <button class="btn-mini" id="btnCopy1">Copiar todo</button>
+          <button class="btn-mini excel" id="btnExcel2">↓ Excel</button>
+        </div>
       </div>
-      <div class="stat">
-        <span class="stat-val" id="statPages">0</span>
-        <span class="stat-label">Páginas analizadas</span>
+      <div class="pages-list" id="pagesList1"></div>
+      <div class="results-footer">
+        <div class="stat"><span class="stat-val" id="statCodes1">0</span><span class="stat-label">Códigos totales</span></div>
+        <div class="stat"><span class="stat-val" id="statPagesW1">0</span><span class="stat-label">Págs con códigos</span></div>
+        <div class="stat"><span class="stat-val" id="statPages1">0</span><span class="stat-label">Páginas analizadas</span></div>
       </div>
+    </div>
+  </div>
+
+  <hr class="step-divider">
+
+  <!-- ══════════════════════════════════════════════════════ PASO 2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" id="step2Num">2</div>
+      <div>
+        <div class="step-title">Buscar en Google Drive</div>
+        <div class="step-desc">Busca cada código como nombre de archivo en la carpeta indicada</div>
+      </div>
+    </div>
+
+    <!-- Carpeta origen -->
+    <div class="folder-row">
+      <span class="folder-icon">📁</span>
+      <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0">
+        <span class="folder-label">ID de carpeta en Drive</span>
+        <input class="folder-id-input" id="folderIdInput"
+               value="1Ib2YutpSq2tOZQKqGzhvi6r5c-c64bGC"
+               placeholder="ID de carpeta de Drive…">
+      </div>
+    </div>
+
+    <button class="btn-search" id="btnSearch" disabled>Buscar códigos en Drive</button>
+
+    <div class="progress-box" id="progressBox2">
+      <div class="progress-header">
+        <span class="progress-label">Buscando en Drive…</span>
+        <span class="progress-count" id="progressCount2">0 / 0</span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill2"></div></div>
+      <div class="progress-status" id="progressStatus2">Preparando…</div>
+    </div>
+
+    <div class="alert error" id="errorBox2">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-text" id="errorText2"></span>
+    </div>
+
+    <!-- Search results -->
+    <div class="search-results" id="searchResults">
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <span class="kpi-val accent" id="kpiTotal">0</span>
+          <span class="kpi-label">Códigos buscados</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-val green" id="kpiFound">0</span>
+          <span class="kpi-label">Encontrados</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-val red" id="kpiNotFound">0</span>
+          <span class="kpi-label">No encontrados</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-val accent" id="kpiPct">0%</span>
+          <span class="kpi-label">Cobertura</span>
+        </div>
+      </div>
+
+      <div class="sr-body">
+        <div class="sr-col">
+          <div class="sr-col-header found">✓ Encontrados <span class="badge green" id="srFoundCount">0</span></div>
+          <div class="sr-col-list" id="srFoundList"></div>
+        </div>
+        <div class="sr-col">
+          <div class="sr-col-header notfound">✗ No encontrados <span class="badge" style="background:rgba(255,77,77,0.2);color:#ff9999" id="srNotFoundCount">0</span></div>
+          <div class="sr-col-list" id="srNotFoundList"></div>
+        </div>
+      </div>
+
+      <div class="sr-footer">
+        <button class="btn-mini excel" id="btnExcelReport">↓ Informe Excel</button>
+      </div>
+
     </div>
   </div>
 
 </main>
 
 <script>
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+const CFG = (typeof window.CATALOGO_EXTRACTOR_CONFIG !== 'undefined')
+  ? window.CATALOGO_EXTRACTOR_CONFIG
+  : { apiKey: '', clientId: '' };
 
-  let pdfFile = null;
-  // pageResults = [ { page: N, codes: ['1234', ...] }, ... ]
-  let pageResults = [];
+const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+const DEFAULT_FOLDER = '1Ib2YutpSq2tOZQKqGzhvi6r5c-c64bGC';
 
-  const dropZone      = document.getElementById('dropZone');
-  const fileInput     = document.getElementById('fileInput');
-  const fileInfo      = document.getElementById('fileInfo');
-  const fileName      = document.getElementById('fileName');
-  const filePages     = document.getElementById('filePages');
-  const btnClear      = document.getElementById('btnClear');
-  const btnExtract    = document.getElementById('btnExtract');
-  const btnExcel      = document.getElementById('btnExcel');
-  const btnExcel2     = document.getElementById('btnExcel2');
-  const btnCopy       = document.getElementById('btnCopy');
-  const progressBox   = document.getElementById('progressBox');
-  const progressCount = document.getElementById('progressCount');
-  const progressFill  = document.getElementById('progressFill');
-  const progressStatus= document.getElementById('progressStatus');
-  const errorBox      = document.getElementById('errorBox');
-  const errorText     = document.getElementById('errorText');
-  const warningBox    = document.getElementById('warningBox');
-  const warningText   = document.getElementById('warningText');
-  const resultsBox    = document.getElementById('resultsBox');
-  const totalBadge    = document.getElementById('totalBadge');
-  const pagesList     = document.getElementById('pagesList');
-  const statCodes         = document.getElementById('statCodes');
-  const statPagesWithCodes= document.getElementById('statPagesWithCodes');
-  const statPages         = document.getElementById('statPages');
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  // Drag & drop
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    const f = e.dataTransfer.files[0];
-    if (f && f.type === 'application/pdf') loadFile(f);
-    else showError('Solo se aceptan archivos PDF (.pdf)');
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let pdfFile      = null;
+let pageResults  = [];   // [{page, codes:[]}]
+let allCodes     = [];   // flat unique list
+let accessToken  = null;
+let searchReport = [];   // [{code, page, found, fileId, fileName}]
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DOM refs
+// ─────────────────────────────────────────────────────────────────────────────
+const btnAuth         = document.getElementById('btnAuth');
+const authLabel       = document.getElementById('authLabel');
+const dropZone        = document.getElementById('dropZone');
+const fileInput       = document.getElementById('fileInput');
+const fileInfo        = document.getElementById('fileInfo');
+const fileName        = document.getElementById('fileName');
+const filePages       = document.getElementById('filePages');
+const btnClear        = document.getElementById('btnClear');
+const btnExtract      = document.getElementById('btnExtract');
+const btnExcel        = document.getElementById('btnExcel');
+const btnExcel2       = document.getElementById('btnExcel2');
+const btnCopy1        = document.getElementById('btnCopy1');
+const progressBox1    = document.getElementById('progressBox1');
+const progressCount1  = document.getElementById('progressCount1');
+const progressFill1   = document.getElementById('progressFill1');
+const progressStatus1 = document.getElementById('progressStatus1');
+const errorBox1       = document.getElementById('errorBox1');
+const errorText1      = document.getElementById('errorText1');
+const warningBox1     = document.getElementById('warningBox1');
+const warningText1    = document.getElementById('warningText1');
+const resultsBox1     = document.getElementById('resultsBox1');
+const totalBadge1     = document.getElementById('totalBadge1');
+const pagesList1      = document.getElementById('pagesList1');
+const statCodes1      = document.getElementById('statCodes1');
+const statPagesW1     = document.getElementById('statPagesW1');
+const statPages1      = document.getElementById('statPages1');
+const step2Num        = document.getElementById('step2Num');
+const folderIdInput   = document.getElementById('folderIdInput');
+const btnSearch       = document.getElementById('btnSearch');
+const progressBox2    = document.getElementById('progressBox2');
+const progressCount2  = document.getElementById('progressCount2');
+const progressFill2   = document.getElementById('progressFill2');
+const progressStatus2 = document.getElementById('progressStatus2');
+const errorBox2       = document.getElementById('errorBox2');
+const errorText2      = document.getElementById('errorText2');
+const searchResults   = document.getElementById('searchResults');
+const kpiTotal        = document.getElementById('kpiTotal');
+const kpiFound        = document.getElementById('kpiFound');
+const kpiNotFound     = document.getElementById('kpiNotFound');
+const kpiPct          = document.getElementById('kpiPct');
+const srFoundList     = document.getElementById('srFoundList');
+const srNotFoundList  = document.getElementById('srNotFoundList');
+const srFoundCount    = document.getElementById('srFoundCount');
+const srNotFoundCount = document.getElementById('srNotFoundCount');
+const btnExcelReport  = document.getElementById('btnExcelReport');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GOOGLE AUTH (GSI)
+// ─────────────────────────────────────────────────────────────────────────────
+function loadGoogleAuth() {
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.onload = () => {};
+  document.head.appendChild(s);
+}
+loadGoogleAuth();
+
+btnAuth.addEventListener('click', () => {
+  if (accessToken) {
+    // Desconectar
+    accessToken = null;
+    btnAuth.classList.remove('connected');
+    authLabel.textContent = 'Conectar con Google';
+    btnSearch.disabled = true;
+    return;
+  }
+  if (!CFG.clientId) {
+    alert('Falta configurar config.js con clientId y apiKey.');
+    return;
+  }
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: CFG.clientId,
+    scope: SCOPES,
+    callback: (resp) => {
+      if (resp.error) { showAlert(errorBox2, errorText2, 'Error de autenticación: ' + resp.error); return; }
+      accessToken = resp.access_token;
+      btnAuth.classList.add('connected');
+      authLabel.textContent = 'Google conectado ✓';
+      if (allCodes.length > 0) btnSearch.disabled = false;
+    }
   });
-  fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
+  client.requestAccessToken();
+});
 
-  async function loadFile(f) {
-    pdfFile = f;
-    pageResults = [];
-    fileName.textContent = f.name;
-    fileInfo.classList.add('visible');
-    hideAll();
+// ─────────────────────────────────────────────────────────────────────────────
+// PASO 1 — EXTRACCIÓN PDF
+// ─────────────────────────────────────────────────────────────────────────────
+const CODE_REGEX = /[Cc][Óó][Dd][Ii][Gg][Oo]\s*:?\s*(\d{4,6})/g;
+
+function extractCodesFromText(text) {
+  const found = [];
+  let m;
+  CODE_REGEX.lastIndex = 0;
+  while ((m = CODE_REGEX.exec(text)) !== null) found.push(m[1]);
+  return found;
+}
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('dragover');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') loadFile(f);
+  else showAlert(errorBox1, errorText1, 'Solo se aceptan archivos PDF (.pdf)');
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
+
+async function loadFile(f) {
+  pdfFile = f;
+  pageResults = []; allCodes = [];
+  fileName.textContent = f.name;
+  fileInfo.classList.add('visible');
+  hideStep1Results();
+  btnExtract.disabled = false;
+  btnExcel.disabled = true;
+  btnSearch.disabled = true;
+  step2Num.classList.remove('active', 'done');
+
+  try {
+    const ab = await f.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    filePages.textContent = pdf.numPages + ' página' + (pdf.numPages !== 1 ? 's' : '');
+  } catch(e) { filePages.textContent = ''; }
+}
+
+btnClear.addEventListener('click', () => {
+  pdfFile = null; pageResults = []; allCodes = [];
+  fileInput.value = '';
+  fileInfo.classList.remove('visible');
+  btnExtract.disabled = true; btnExcel.disabled = true; btnSearch.disabled = true;
+  hideStep1Results();
+  step2Num.classList.remove('active', 'done');
+});
+
+btnExtract.addEventListener('click', runExtraction);
+
+async function runExtraction() {
+  if (!pdfFile) return;
+  hideStep1Results();
+  btnExtract.disabled = true; btnExcel.disabled = true; btnSearch.disabled = true;
+  progressBox1.classList.add('visible');
+  pageResults = []; allCodes = [];
+
+  try {
+    const ab = await pdfFile.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    const total = pdf.numPages;
+
+    for (let p = 1; p <= total; p++) {
+      progressStatus1.textContent = 'Procesando página ' + p + ' de ' + total + '…';
+      progressCount1.textContent = p + ' / ' + total;
+      progressFill1.style.width = Math.round((p / total) * 100) + '%';
+
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const text = content.items.map(i => i.str).join(' ');
+      pageResults.push({ page: p, codes: extractCodesFromText(text) });
+    }
+
+    progressBox1.classList.remove('visible');
+
+    // Flat unique list (preserves page association via pageResults)
+    const seen = new Set();
+    pageResults.forEach(r => r.codes.forEach(c => seen.add(c)));
+    allCodes = [...seen].sort((a, b) => Number(a) - Number(b));
+
+    const totalCodes = pageResults.reduce((s, r) => s + r.codes.length, 0);
+
+    if (totalCodes === 0) {
+      showAlert(warningBox1, warningText1,
+        'No se encontraron códigos en este PDF.\n\n' +
+        '• El PDF puede ser una imagen escaneada (sin texto seleccionable)\n' +
+        '• O los códigos tienen un formato diferente al esperado\n\n' +
+        'Prueba seleccionar texto en el PDF con el cursor.');
+    } else {
+      renderStep1Results(pageResults, total, totalCodes);
+      btnExcel.disabled = false;
+      step2Num.classList.add('active');
+      if (accessToken) btnSearch.disabled = false;
+    }
+
+  } catch(err) {
+    progressBox1.classList.remove('visible');
+    showAlert(errorBox1, errorText1, 'Error al procesar el PDF: ' + err.message);
+  } finally {
     btnExtract.disabled = false;
-    btnExcel.disabled = true;
-
-    try {
-      const ab = await f.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
-      filePages.textContent = pdf.numPages + ' página' + (pdf.numPages !== 1 ? 's' : '');
-    } catch(e) { filePages.textContent = ''; }
   }
+}
 
-  btnClear.addEventListener('click', () => {
-    pdfFile = null; pageResults = []; fileInput.value = '';
-    fileInfo.classList.remove('visible');
-    btnExtract.disabled = true; btnExcel.disabled = true;
-    hideAll();
+function renderStep1Results(results, totalPages, totalCodes) {
+  resultsBox1.classList.add('visible');
+  const pagesWithCodes = results.filter(r => r.codes.length > 0).length;
+  totalBadge1.textContent = totalCodes + ' código' + (totalCodes !== 1 ? 's' : '');
+  statCodes1.textContent = totalCodes;
+  statPagesW1.textContent = pagesWithCodes;
+  statPages1.textContent = totalPages;
+
+  pagesList1.innerHTML = '';
+  results.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'page-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'page-label';
+    lbl.innerHTML = '<span class="page-num">Pág ' + r.page + '</span>' +
+      '<span class="page-count-badge">' + (r.codes.length > 0 ? r.codes.length + ' cód.' : 'sin códigos') + '</span>';
+
+    const codesDiv = document.createElement('div');
+    codesDiv.className = 'page-codes';
+
+    if (r.codes.length === 0) {
+      const empty = document.createElement('span');
+      empty.className = 'no-codes';
+      empty.textContent = '—';
+      codesDiv.appendChild(empty);
+    } else {
+      r.codes.forEach(c => {
+        const chip = document.createElement('span');
+        chip.className = 'code-chip';
+        chip.textContent = c;
+        codesDiv.appendChild(chip);
+      });
+    }
+
+    row.appendChild(lbl);
+    row.appendChild(codesDiv);
+    pagesList1.appendChild(row);
+  });
+}
+
+btnCopy1.addEventListener('click', () => {
+  const text = pageResults.filter(r => r.codes.length > 0)
+    .map(r => 'Pág ' + r.page + ': ' + r.codes.join(', ')).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    btnCopy1.textContent = '✓ Copiado';
+    setTimeout(() => btnCopy1.textContent = 'Copiar todo', 2000);
+  });
+});
+
+function downloadStep1Excel() {
+  if (!pageResults.length) return;
+  const rows = [['Página', 'Código']];
+  pageResults.forEach(r => {
+    if (r.codes.length === 0) rows.push(['Pág ' + r.page, '']);
+    else r.codes.forEach(c => rows.push(['Pág ' + r.page, c]));
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{ wch: 12 }, { wch: 14 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Códigos por Página');
+  const name = (pdfFile ? pdfFile.name : 'catalogo').replace(/\.pdf$/i, '');
+  XLSX.writeFile(wb, 'codigos_' + name + '.xlsx');
+}
+btnExcel.addEventListener('click', downloadStep1Excel);
+btnExcel2.addEventListener('click', downloadStep1Excel);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PASO 2 — BÚSQUEDA EN DRIVE
+// ─────────────────────────────────────────────────────────────────────────────
+btnSearch.addEventListener('click', runDriveSearch);
+
+async function driveSearch(name, folderId) {
+  // Exact name match, not trashed, within folder
+  const q = encodeURIComponent(
+    "name = '" + name.replace(/'/g, "\\'") + "' and '" + folderId + "' in parents and trashed = false"
+  );
+  const url = 'https://www.googleapis.com/drive/v3/files?q=' + q +
+              '&fields=files(id,name)&pageSize=5';
+  const res = await fetch(url, {
+    headers: { Authorization: 'Bearer ' + accessToken }
+  });
+  if (!res.ok) {
+    const e = await res.json();
+    throw new Error(e.error?.message || 'Drive API error ' + res.status);
+  }
+  const data = await res.json();
+  return data.files || [];
+}
+
+async function runDriveSearch() {
+  if (!accessToken) { showAlert(errorBox2, errorText2, 'Primero conecta con Google (botón superior derecho).'); return; }
+  if (!allCodes.length) { showAlert(errorBox2, errorText2, 'Primero extrae los códigos del PDF (Paso 1).'); return; }
+
+  const folderId = folderIdInput.value.trim() || DEFAULT_FOLDER;
+  hideStep2Results();
+  btnSearch.disabled = true;
+  progressBox2.classList.add('visible');
+  searchReport = [];
+
+  // Build map: code → page numbers
+  const codePageMap = {};
+  pageResults.forEach(r => r.codes.forEach(c => {
+    if (!codePageMap[c]) codePageMap[c] = [];
+    codePageMap[c].push(r.page);
+  }));
+
+  const codes = allCodes;
+  let done = 0;
+
+  try {
+    for (const code of codes) {
+      progressStatus2.textContent = 'Buscando código ' + code + '…';
+      progressCount2.textContent = (done + 1) + ' / ' + codes.length;
+      progressFill2.style.width = Math.round((done / codes.length) * 100) + '%';
+
+      try {
+        const files = await driveSearch(code, folderId);
+        if (files.length > 0) {
+          searchReport.push({ code, pages: codePageMap[code] || [], found: true, fileId: files[0].id, fileName: files[0].name });
+        } else {
+          searchReport.push({ code, pages: codePageMap[code] || [], found: false });
+        }
+      } catch(err) {
+        // If auth expired mid-search, stop
+        if (err.message.includes('401') || err.message.includes('Invalid Credentials')) {
+          throw new Error('Sesión de Google expirada. Vuelve a conectar y reintenta.');
+        }
+        searchReport.push({ code, pages: codePageMap[code] || [], found: false, error: err.message });
+      }
+
+      done++;
+      // Small delay to avoid rate limits
+      await new Promise(r => setTimeout(r, 80));
+    }
+
+    progressFill2.style.width = '100%';
+    progressBox2.classList.remove('visible');
+    renderSearchResults(searchReport);
+    step2Num.classList.remove('active');
+    step2Num.classList.add('done');
+
+  } catch(err) {
+    progressBox2.classList.remove('visible');
+    showAlert(errorBox2, errorText2, err.message);
+  } finally {
+    btnSearch.disabled = false;
+  }
+}
+
+function renderSearchResults(report) {
+  searchResults.classList.add('visible');
+
+  const found    = report.filter(r => r.found);
+  const notFound = report.filter(r => !r.found);
+  const pct = report.length > 0 ? Math.round((found.length / report.length) * 100) : 0;
+
+  kpiTotal.textContent    = report.length;
+  kpiFound.textContent    = found.length;
+  kpiNotFound.textContent = notFound.length;
+  kpiPct.textContent      = pct + '%';
+  srFoundCount.textContent    = found.length;
+  srNotFoundCount.textContent = notFound.length;
+
+  srFoundList.innerHTML = '';
+  found.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'sr-item found';
+    item.innerHTML =
+      '<span class="sr-dot found"></span>' +
+      '<span>' + r.code + '</span>' +
+      '<span class="sr-page">Pág ' + r.pages.join(', ') + '</span>';
+    srFoundList.appendChild(item);
   });
 
-  btnExtract.addEventListener('click', runExtraction);
-  btnExcel.addEventListener('click', downloadExcel);
-  btnExcel2.addEventListener('click', downloadExcel);
+  srNotFoundList.innerHTML = '';
+  notFound.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'sr-item notfound';
+    item.innerHTML =
+      '<span class="sr-dot notfound"></span>' +
+      '<span>' + r.code + '</span>' +
+      '<span class="sr-page">Pág ' + r.pages.join(', ') + '</span>';
+    srNotFoundList.appendChild(item);
+  });
+}
 
-  btnCopy.addEventListener('click', () => {
-    const lines = pageResults
-      .filter(r => r.codes.length > 0)
-      .map(r => 'Pág ' + r.page + ': ' + r.codes.join(', '))
-      .join('\n');
-    navigator.clipboard.writeText(lines).then(() => {
-      btnCopy.textContent = '✓ Copiado';
-      setTimeout(() => btnCopy.textContent = 'Copiar todo', 2000);
-    });
+btnExcelReport.addEventListener('click', () => {
+  if (!searchReport.length) return;
+
+  const rows = [['Código', 'Página(s)', 'Estado']];
+  searchReport.forEach(r => {
+    rows.push([r.code, 'Pág ' + r.pages.join(', '), r.found ? 'ENCONTRADO' : 'NO ENCONTRADO']);
   });
 
-  // Regex: "Código:" seguido de 4-6 dígitos, tolerante a espacios y variantes
-  const CODE_REGEX = /[Cc][Óó][Dd][Ii][Gg][Oo]\s*:?\s*(\d{4,6})/g;
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{ wch: 12 }, { wch: 16 }, { wch: 18 }];
 
-  function extractCodesFromText(text) {
-    const found = [];
-    let match;
-    CODE_REGEX.lastIndex = 0;
-    while ((match = CODE_REGEX.exec(text)) !== null) {
-      found.push(match[1]);
-    }
-    return found;
+  // Color hint via cell values (XLSX free version doesn't support full styles, keep it clean)
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Informe Búsqueda Drive');
+
+  // Second sheet: only found
+  const found = searchReport.filter(r => r.found);
+  if (found.length > 0) {
+    const ws2 = XLSX.utils.aoa_to_sheet([['Código', 'Página(s)']].concat(found.map(r => [r.code, 'Pág ' + r.pages.join(', ')])));
+    ws2['!cols'] = [{ wch: 12 }, { wch: 16 }];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Encontrados');
   }
 
-  async function runExtraction() {
-    if (!pdfFile) return;
-    hideAll();
-    btnExtract.disabled = true;
-    btnExcel.disabled = true;
-    progressBox.classList.add('visible');
-    pageResults = [];
-
-    try {
-      const ab = await pdfFile.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
-      const total = pdf.numPages;
-
-      for (let p = 1; p <= total; p++) {
-        progressStatus.textContent = 'Procesando página ' + p + ' de ' + total + '…';
-        progressCount.textContent = p + ' / ' + total;
-        progressFill.style.width = Math.round((p / total) * 100) + '%';
-
-        const page = await pdf.getPage(p);
-        const content = await page.getTextContent();
-        const text = content.items.map(i => i.str).join(' ');
-        const codes = extractCodesFromText(text);
-
-        pageResults.push({ page: p, codes: codes });
-      }
-
-      progressBox.classList.remove('visible');
-
-      const totalCodes = pageResults.reduce((s, r) => s + r.codes.length, 0);
-
-      if (totalCodes === 0) {
-        showWarning(
-          'No se encontraron códigos en este PDF.\n\n' +
-          'Posibles causas:\n' +
-          '• El PDF es una imagen escaneada (sin texto seleccionable)\n' +
-          '• Los códigos usan un formato diferente al esperado\n\n' +
-          'Prueba seleccionar texto en el PDF con el cursor. Si no puedes, es un PDF escaneado.'
-        );
-      } else {
-        showResults(pageResults, total, totalCodes);
-        btnExcel.disabled = false;
-      }
-
-    } catch(err) {
-      progressBox.classList.remove('visible');
-      showError('Error al procesar el PDF: ' + err.message);
-    } finally {
-      btnExtract.disabled = false;
-    }
+  // Third sheet: not found
+  const nf = searchReport.filter(r => !r.found);
+  if (nf.length > 0) {
+    const ws3 = XLSX.utils.aoa_to_sheet([['Código', 'Página(s)']].concat(nf.map(r => [r.code, 'Pág ' + r.pages.join(', ')])));
+    ws3['!cols'] = [{ wch: 12 }, { wch: 16 }];
+    XLSX.utils.book_append_sheet(wb, ws3, 'No Encontrados');
   }
 
-  function showResults(results, totalPages, totalCodes) {
-    resultsBox.classList.add('visible');
-    const pagesWithCodes = results.filter(r => r.codes.length > 0).length;
+  const name = (pdfFile ? pdfFile.name : 'catalogo').replace(/\.pdf$/i, '');
+  XLSX.writeFile(wb, 'informe_drive_' + name + '.xlsx');
+});
 
-    totalBadge.textContent = totalCodes + ' código' + (totalCodes !== 1 ? 's' : '');
-    statCodes.textContent = totalCodes;
-    statPagesWithCodes.textContent = pagesWithCodes;
-    statPages.textContent = totalPages;
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function showAlert(box, textEl, msg) { box.classList.add('visible'); textEl.textContent = msg; }
 
-    pagesList.innerHTML = '';
+function hideStep1Results() {
+  progressBox1.classList.remove('visible');
+  errorBox1.classList.remove('visible');
+  warningBox1.classList.remove('visible');
+  resultsBox1.classList.remove('visible');
+}
 
-    results.forEach(r => {
-      const row = document.createElement('div');
-      row.className = 'page-row';
-
-      const label = document.createElement('div');
-      label.className = 'page-label';
-      label.innerHTML =
-        '<span class="page-num">Pág ' + r.page + '</span>' +
-        '<span class="page-count-badge">' +
-          (r.codes.length > 0 ? r.codes.length + ' cód.' : 'sin códigos') +
-        '</span>';
-
-      const codesDiv = document.createElement('div');
-      codesDiv.className = 'page-codes';
-
-      if (r.codes.length === 0) {
-        const empty = document.createElement('span');
-        empty.className = 'no-codes';
-        empty.textContent = '—';
-        codesDiv.appendChild(empty);
-      } else {
-        r.codes.forEach(c => {
-          const chip = document.createElement('span');
-          chip.className = 'code-chip';
-          chip.textContent = c;
-          codesDiv.appendChild(chip);
-        });
-      }
-
-      row.appendChild(label);
-      row.appendChild(codesDiv);
-      pagesList.appendChild(row);
-    });
-  }
-
-  function downloadExcel() {
-    if (!pageResults.length) return;
-
-    // Construir filas: encabezado + una fila por cada código
-    const rows = [['Página', 'Código']];
-
-    pageResults.forEach(r => {
-      if (r.codes.length === 0) {
-        rows.push(['Pág ' + r.page, '']);
-      } else {
-        r.codes.forEach(c => {
-          rows.push(['Pág ' + r.page, c]);
-        });
-      }
-    });
-
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-
-    // Anchos de columna
-    ws['!cols'] = [{ wch: 12 }, { wch: 14 }];
-
-    // Negrita en encabezado
-    if (ws['A1']) ws['A1'].s = { font: { bold: true } };
-    if (ws['B1']) ws['B1'].s = { font: { bold: true } };
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Códigos por Página');
-
-    const safeName = (pdfFile ? pdfFile.name : 'catalogo').replace(/\.pdf$/i, '');
-    XLSX.writeFile(wb, 'codigos_' + safeName + '.xlsx');
-  }
-
-  function showError(msg) { errorBox.classList.add('visible'); errorText.textContent = msg; }
-  function showWarning(msg) { warningBox.classList.add('visible'); warningText.textContent = msg; }
-  function hideAll() {
-    progressBox.classList.remove('visible');
-    errorBox.classList.remove('visible');
-    warningBox.classList.remove('visible');
-    resultsBox.classList.remove('visible');
-  }
+function hideStep2Results() {
+  progressBox2.classList.remove('visible');
+  errorBox2.classList.remove('visible');
+  searchResults.classList.remove('visible');
+}
 </script>
 </body>
 </html>
