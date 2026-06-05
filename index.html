@@ -9,174 +9,166 @@
 <script src="config.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
-
   :root {
-    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #242424; --border: #2e2e2e;
-    --accent: #c8f135; --text: #f0f0f0; --muted: #777;
-    --danger: #ff4d4d; --success: #4dffb8; --warning: #ffd080;
+    --bg:#0f0f0f; --surface:#1a1a1a; --surface2:#242424; --border:#2e2e2e;
+    --accent:#c8f135; --text:#f0f0f0; --muted:#777;
+    --danger:#ff4d4d; --success:#4dffb8; --warning:#ffd080;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:40px 20px 80px; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 80px;}
 
-  header { width:100%; max-width:960px; margin-bottom:48px; border-bottom:1px solid var(--border); padding-bottom:24px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; }
-  .header-top { display:flex; align-items:baseline; gap:16px; margin-bottom:8px; }
-  h1 { font-size:2rem; font-weight:800; letter-spacing:-0.03em; }
-  .tag { font-family:'DM Mono',monospace; font-size:0.65rem; background:var(--accent); color:#000; padding:3px 8px; border-radius:2px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
-  .subtitle { font-size:0.875rem; color:var(--muted); }
+  header{width:100%;max-width:960px;margin-bottom:48px;border-bottom:1px solid var(--border);padding-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+  .header-top{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
+  h1{font-size:2rem;font-weight:800;letter-spacing:-0.03em;}
+  .tag{font-family:'DM Mono',monospace;font-size:0.65rem;background:var(--accent);color:#000;padding:3px 8px;border-radius:2px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;}
+  .subtitle{font-size:0.875rem;color:var(--muted);}
 
-  .btn-auth { display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:10px 18px; color:var(--text); font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:border-color 0.15s; white-space:nowrap; }
-  .btn-auth:hover { border-color:var(--accent); }
-  .btn-auth.connected { border-color:var(--success); color:var(--success); }
-  .btn-auth .dot { width:7px; height:7px; border-radius:50%; background:var(--muted); flex-shrink:0; }
-  .btn-auth.connected .dot { background:var(--success); }
+  .btn-auth{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 18px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:border-color 0.15s;white-space:nowrap;}
+  .btn-auth:hover{border-color:var(--accent);}
+  .btn-auth.connected{border-color:var(--success);color:var(--success);}
+  .btn-auth .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+  .btn-auth.connected .dot{background:var(--success);}
 
-  main { width:100%; max-width:960px; display:flex; flex-direction:column; gap:32px; }
+  main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:32px;}
+  .step{display:flex;flex-direction:column;gap:16px;}
+  .step-header{display:flex;align-items:center;gap:14px;}
+  .step-num{font-family:'DM Mono',monospace;font-size:0.7rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-num.active{background:var(--accent);border-color:var(--accent);color:#000;}
+  .step-num.done{background:var(--success);border-color:var(--success);color:#000;}
+  .step-title{font-size:1rem;font-weight:700;}
+  .step-desc{font-size:0.8rem;color:var(--muted);}
+  .step-divider{border:none;border-top:1px dashed var(--border);}
 
-  .step { display:flex; flex-direction:column; gap:16px; }
-  .step-header { display:flex; align-items:center; gap:14px; }
-  .step-num { font-family:'DM Mono',monospace; font-size:0.7rem; font-weight:700; background:var(--surface2); border:1px solid var(--border); color:var(--muted); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .step-num.active { background:var(--accent); border-color:var(--accent); color:#000; }
-  .step-num.done { background:var(--success); border-color:var(--success); color:#000; }
-  .step-title { font-size:1rem; font-weight:700; }
-  .step-desc { font-size:0.8rem; color:var(--muted); }
-  .step-divider { border:none; border-top:1px dashed var(--border); }
+  .drop-zone{border:2px dashed var(--border);border-radius:8px;padding:44px 32px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;position:relative;background:var(--surface);}
+  .drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:#1e2410;}
+  .drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .drop-icon{font-size:2.2rem;margin-bottom:10px;display:block;}
+  .drop-title{font-size:1rem;font-weight:700;margin-bottom:6px;}
+  .drop-hint{font-size:0.78rem;color:var(--muted);font-family:'DM Mono',monospace;}
 
-  .drop-zone { border:2px dashed var(--border); border-radius:8px; padding:44px 32px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; position:relative; background:var(--surface); }
-  .drop-zone:hover,.drop-zone.dragover { border-color:var(--accent); background:#1e2410; }
-  .drop-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-  .drop-icon { font-size:2.2rem; margin-bottom:10px; display:block; }
-  .drop-title { font-size:1rem; font-weight:700; margin-bottom:6px; }
-  .drop-hint { font-size:0.78rem; color:var(--muted); font-family:'DM Mono',monospace; }
+  .file-info{display:none;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 20px;}
+  .file-info.visible{display:flex;}
+  .file-name{font-family:'DM Mono',monospace;font-size:0.85rem;color:var(--accent);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .file-pages{font-size:0.75rem;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap;}
+  .btn-clear{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;}
 
-  .file-info { display:none; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 20px; }
-  .file-info.visible { display:flex; }
-  .file-name { font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--accent); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .file-pages { font-size:0.75rem; color:var(--muted); font-family:'DM Mono',monospace; white-space:nowrap; }
-  .btn-clear { background:none; border:none; color:var(--danger); cursor:pointer; font-size:1rem; padding:2px 6px; border-radius:4px; }
+  .controls{display:flex;gap:12px;}
+  .btn-primary{background:var(--accent);color:#000;border:none;border-radius:6px;padding:13px 28px;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:background 0.15s,transform 0.1s;flex:1;}
+  .btn-primary:hover:not(:disabled){background:#d6ff3f;transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn-secondary{background:none;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:13px 22px;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:border-color 0.15s;white-space:nowrap;}
+  .btn-secondary:hover:not(:disabled){border-color:var(--accent);}
+  .btn-secondary:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn-full{background:var(--accent);color:#000;border:none;border-radius:6px;padding:13px 28px;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:background 0.15s,transform 0.1s;width:100%;}
+  .btn-full:hover:not(:disabled){background:#d6ff3f;transform:translateY(-1px);}
+  .btn-full:disabled{opacity:0.35;cursor:not-allowed;}
 
-  .controls { display:flex; gap:12px; }
-  .btn-primary { background:var(--accent); color:#000; border:none; border-radius:6px; padding:13px 28px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; transition:background 0.15s,transform 0.1s; flex:1; }
-  .btn-primary:hover:not(:disabled) { background:#d6ff3f; transform:translateY(-1px); }
-  .btn-primary:disabled { opacity:0.35; cursor:not-allowed; }
-  .btn-secondary { background:none; color:var(--text); border:1px solid var(--border); border-radius:6px; padding:13px 22px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:border-color 0.15s; white-space:nowrap; }
-  .btn-secondary:hover:not(:disabled) { border-color:var(--accent); }
-  .btn-secondary:disabled { opacity:0.35; cursor:not-allowed; }
+  .progress-box{display:none;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;}
+  .progress-box.visible{display:flex;}
+  .progress-header{display:flex;justify-content:space-between;}
+  .progress-label{font-size:0.78rem;color:var(--muted);font-family:'DM Mono',monospace;}
+  .progress-count{font-size:0.78rem;color:var(--accent);font-family:'DM Mono',monospace;font-weight:500;}
+  .progress-bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.2s;width:0%;}
+  .progress-status{font-size:0.73rem;color:var(--muted);font-family:'DM Mono',monospace;}
 
-  .progress-box { display:none; flex-direction:column; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px 20px; }
-  .progress-box.visible { display:flex; }
-  .progress-header { display:flex; justify-content:space-between; }
-  .progress-label { font-size:0.78rem; color:var(--muted); font-family:'DM Mono',monospace; }
-  .progress-count { font-size:0.78rem; color:var(--accent); font-family:'DM Mono',monospace; font-weight:500; }
-  .progress-bar-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
-  .progress-bar-fill { height:100%; background:var(--accent); border-radius:2px; transition:width 0.2s; width:0%; }
-  .progress-status { font-size:0.73rem; color:var(--muted); font-family:'DM Mono',monospace; }
+  .alert{display:none;align-items:flex-start;gap:12px;border-radius:8px;padding:14px 18px;}
+  .alert.visible{display:flex;}
+  .alert-text{font-size:0.8rem;font-family:'DM Mono',monospace;line-height:1.6;white-space:pre-line;}
+  .alert.error{background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.3);}
+  .alert.error .alert-text{color:#ff9999;}
+  .alert.warning{background:rgba(255,200,50,0.08);border:1px solid rgba(255,200,50,0.3);}
+  .alert.warning .alert-text{color:var(--warning);}
 
-  .alert { display:none; align-items:flex-start; gap:12px; border-radius:8px; padding:14px 18px; }
-  .alert.visible { display:flex; }
-  .alert-text { font-size:0.8rem; font-family:'DM Mono',monospace; line-height:1.6; white-space:pre-line; }
-  .alert.error { background:rgba(255,77,77,0.08); border:1px solid rgba(255,77,77,0.3); }
-  .alert.error .alert-text { color:#ff9999; }
-  .alert.warning { background:rgba(255,200,50,0.08); border:1px solid rgba(255,200,50,0.3); }
-  .alert.warning .alert-text { color:var(--warning); }
+  .results-box{display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .results-box.visible{display:flex;}
+  .results-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface2);flex-wrap:wrap;gap:10px;}
+  .results-title{font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:10px;}
+  .badge{font-family:'DM Mono',monospace;font-size:0.68rem;padding:2px 8px;border-radius:2px;font-weight:500;}
+  .badge.green{background:var(--success);color:#000;}
+  .badge.accent{background:var(--accent);color:#000;}
+  .badge.red{background:rgba(255,77,77,0.2);color:#ff9999;}
+  .results-actions{display:flex;gap:8px;}
+  .btn-mini{background:none;border:1px solid var(--border);color:var(--text);border-radius:4px;padding:5px 12px;font-family:'Syne',sans-serif;font-size:0.73rem;font-weight:600;cursor:pointer;transition:all 0.15s;}
+  .btn-mini:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-mini.excel{background:var(--accent);border-color:var(--accent);color:#000;}
+  .btn-mini.excel:hover{background:#d6ff3f;}
 
-  /* Results Step 1 */
-  .results-box { display:none; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-  .results-box.visible { display:flex; }
-  .results-header { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-bottom:1px solid var(--border); background:var(--surface2); flex-wrap:wrap; gap:10px; }
-  .results-title { font-size:0.82rem; font-weight:700; display:flex; align-items:center; gap:10px; }
-  .badge { font-family:'DM Mono',monospace; font-size:0.68rem; padding:2px 8px; border-radius:2px; font-weight:500; }
-  .badge.green { background:var(--success); color:#000; }
-  .badge.accent { background:var(--accent); color:#000; }
-  .badge.red { background:rgba(255,77,77,0.2); color:#ff9999; }
-  .results-actions { display:flex; gap:8px; }
-  .btn-mini { background:none; border:1px solid var(--border); color:var(--text); border-radius:4px; padding:5px 12px; font-family:'Syne',sans-serif; font-size:0.73rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
-  .btn-mini:hover { border-color:var(--accent); color:var(--accent); }
-  .btn-mini.excel { background:var(--accent); border-color:var(--accent); color:#000; }
-  .btn-mini.excel:hover { background:#d6ff3f; }
+  .pages-list{display:flex;flex-direction:column;max-height:380px;overflow-y:auto;}
+  .pages-list::-webkit-scrollbar{width:5px;}
+  .pages-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .page-row{display:flex;align-items:flex-start;border-bottom:1px solid var(--border);}
+  .page-row:last-child{border-bottom:none;}
+  .page-label{font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--muted);background:var(--surface2);padding:12px 14px;min-width:86px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:3px;}
+  .page-num{color:var(--accent);font-size:0.88rem;font-weight:700;}
+  .page-count-badge{font-size:0.62rem;color:var(--muted);}
+  .page-codes{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;flex:1;align-items:center;}
+  .code-chip{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 9px;}
+  .no-codes{font-family:'DM Mono',monospace;font-size:0.73rem;color:var(--border);}
+  .results-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:28px;background:var(--surface2);flex-wrap:wrap;}
+  .stat{display:flex;flex-direction:column;gap:2px;}
+  .stat-val{font-size:1rem;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;}
+  .stat-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
 
-  .pages-list { display:flex; flex-direction:column; max-height:380px; overflow-y:auto; }
-  .pages-list::-webkit-scrollbar { width:5px; }
-  .pages-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-  .page-row { display:flex; align-items:flex-start; border-bottom:1px solid var(--border); }
-  .page-row:last-child { border-bottom:none; }
-  .page-label { font-family:'DM Mono',monospace; font-size:0.73rem; color:var(--muted); background:var(--surface2); padding:12px 14px; min-width:86px; border-right:1px solid var(--border); display:flex; flex-direction:column; gap:3px; }
-  .page-num { color:var(--accent); font-size:0.88rem; font-weight:700; }
-  .page-count-badge { font-size:0.62rem; color:var(--muted); }
-  .page-codes { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; flex:1; align-items:center; }
-  .code-chip { font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--text); background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:3px 9px; }
-  .no-codes { font-family:'DM Mono',monospace; font-size:0.73rem; color:var(--border); }
-  .results-footer { padding:12px 20px; border-top:1px solid var(--border); display:flex; gap:28px; background:var(--surface2); flex-wrap:wrap; }
-  .stat { display:flex; flex-direction:column; gap:2px; }
-  .stat-val { font-size:1rem; font-weight:800; color:var(--accent); font-family:'DM Mono',monospace; }
-  .stat-label { font-size:0.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .folder-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;}
+  .folder-icon{font-size:1.1rem;flex-shrink:0;}
+  .folder-id-input{flex:1;background:transparent;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:0.82rem;outline:none;min-width:0;}
+  .folder-id-input::placeholder{color:var(--muted);}
+  .folder-label{font-size:0.7rem;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap;}
 
-  /* Step 2 */
-  .folder-row { display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 16px; }
-  .folder-icon { font-size:1.1rem; flex-shrink:0; }
-  .folder-id-input { flex:1; background:transparent; border:none; color:var(--accent); font-family:'DM Mono',monospace; font-size:0.82rem; outline:none; min-width:0; }
-  .folder-id-input::placeholder { color:var(--muted); }
-  .folder-label { font-size:0.7rem; color:var(--muted); font-family:'DM Mono',monospace; white-space:nowrap; }
-  .btn-full { background:var(--accent); color:#000; border:none; border-radius:6px; padding:13px 28px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; transition:background 0.15s,transform 0.1s; width:100%; }
-  .btn-full:hover:not(:disabled) { background:#d6ff3f; transform:translateY(-1px); }
-  .btn-full:disabled { opacity:0.35; cursor:not-allowed; }
+  .search-results{display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .search-results.visible{display:flex;}
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+  .kpi-card{background:var(--surface2);padding:18px 20px;display:flex;flex-direction:column;gap:4px;}
+  .kpi-val{font-size:1.6rem;font-weight:800;font-family:'DM Mono',monospace;}
+  .kpi-val.green{color:var(--success);}
+  .kpi-val.red{color:var(--danger);}
+  .kpi-val.accent{color:var(--accent);}
+  .kpi-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+  .sr-body{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--border);max-height:320px;overflow:hidden;}
+  .sr-col{background:var(--surface);display:flex;flex-direction:column;overflow:hidden;}
+  .sr-col-header{padding:10px 16px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+  .sr-col-header.found{color:var(--success);}
+  .sr-col-header.notfound{color:var(--danger);}
+  .sr-col-list{overflow-y:auto;flex:1;}
+  .sr-col-list::-webkit-scrollbar{width:4px;}
+  .sr-col-list::-webkit-scrollbar-thumb{background:var(--border);}
+  .sr-item{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.8rem;}
+  .sr-item:last-child{border-bottom:none;}
+  .sr-item.found{color:var(--text);}
+  .sr-item.notfound{color:var(--muted);}
+  .sr-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .sr-dot.found{background:var(--success);}
+  .sr-dot.notfound{background:var(--danger);opacity:0.5;}
+  .sr-page{font-size:0.65rem;color:var(--muted);margin-left:auto;}
+  .sr-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;background:var(--surface2);}
 
-  /* KPI cards */
-  .search-results { display:none; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-  .search-results.visible { display:flex; }
-  .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border-bottom:1px solid var(--border); }
-  .kpi-card { background:var(--surface2); padding:18px 20px; display:flex; flex-direction:column; gap:4px; }
-  .kpi-val { font-size:1.6rem; font-weight:800; font-family:'DM Mono',monospace; }
-  .kpi-val.green { color:var(--success); }
-  .kpi-val.red { color:var(--danger); }
-  .kpi-val.accent { color:var(--accent); }
-  .kpi-label { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
-  .sr-body { display:grid; grid-template-columns:1fr 1fr; gap:0; background:var(--border); max-height:320px; overflow:hidden; }
-  .sr-col { background:var(--surface); display:flex; flex-direction:column; overflow:hidden; }
-  .sr-col-header { padding:10px 16px; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
-  .sr-col-header.found { color:var(--success); }
-  .sr-col-header.notfound { color:var(--danger); }
-  .sr-col-list { overflow-y:auto; flex:1; }
-  .sr-col-list::-webkit-scrollbar { width:4px; }
-  .sr-col-list::-webkit-scrollbar-thumb { background:var(--border); }
-  .sr-item { display:flex; align-items:center; gap:8px; padding:8px 16px; border-bottom:1px solid var(--border); font-family:'DM Mono',monospace; font-size:0.8rem; }
-  .sr-item:last-child { border-bottom:none; }
-  .sr-item.found { color:var(--text); }
-  .sr-item.notfound { color:var(--muted); }
-  .sr-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-  .sr-dot.found { background:var(--success); }
-  .sr-dot.notfound { background:var(--danger); opacity:0.5; }
-  .sr-page { font-size:0.65rem; color:var(--muted); margin-left:auto; }
-  .sr-footer { padding:12px 20px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; background:var(--surface2); }
+  .dest-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 18px;}
+  .dest-info{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .dest-label{font-size:0.68rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;}
+  .dest-path{font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .dest-path.empty{color:var(--muted);font-style:italic;}
+  .btn-choose{background:none;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 16px;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:border-color 0.15s;white-space:nowrap;flex-shrink:0;}
+  .btn-choose:hover{border-color:var(--accent);color:var(--accent);}
 
-  /* Step 3 */
-  .dest-row { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 18px; }
-  .dest-info { flex:1; display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .dest-label { font-size:0.68rem; color:var(--muted); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:0.06em; }
-  .dest-path { font-family:'DM Mono',monospace; font-size:0.82rem; color:var(--accent); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .dest-path.empty { color:var(--muted); font-style:italic; }
-  .btn-choose { background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:8px 16px; font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; transition:border-color 0.15s; white-space:nowrap; flex-shrink:0; }
-  .btn-choose:hover { border-color:var(--accent); color:var(--accent); }
+  .copy-log{display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .copy-log.visible{display:flex;}
+  .copy-log-header{padding:12px 18px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .copy-log-title{font-size:0.8rem;font-weight:700;}
+  .log-list{max-height:260px;overflow-y:auto;padding:8px 0;}
+  .log-list::-webkit-scrollbar{width:4px;}
+  .log-list::-webkit-scrollbar-thumb{background:var(--border);}
+  .log-item{display:flex;align-items:center;gap:10px;padding:6px 18px;font-family:'DM Mono',monospace;font-size:0.75rem;}
+  .log-item .li-icon{flex-shrink:0;font-size:0.85rem;}
+  .log-item .li-text{color:var(--muted);flex:1;}
+  .log-item .li-text span{color:var(--text);}
+  .log-item.ok .li-text{color:#aaa;}
+  .log-item.err .li-text{color:#ff9999;}
+  .copy-summary{padding:14px 18px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:28px;flex-wrap:wrap;}
 
-  /* Copy log */
-  .copy-log { display:none; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-  .copy-log.visible { display:flex; }
-  .copy-log-header { padding:12px 18px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-  .copy-log-title { font-size:0.8rem; font-weight:700; }
-  .log-list { max-height:260px; overflow-y:auto; padding:8px 0; }
-  .log-list::-webkit-scrollbar { width:4px; }
-  .log-list::-webkit-scrollbar-thumb { background:var(--border); }
-  .log-item { display:flex; align-items:center; gap:10px; padding:6px 18px; font-family:'DM Mono',monospace; font-size:0.75rem; }
-  .log-item .li-icon { flex-shrink:0; font-size:0.85rem; }
-  .log-item .li-text { color:var(--muted); flex:1; }
-  .log-item .li-text span { color:var(--text); }
-  .log-item .li-folder { color:var(--accent); font-size:0.7rem; }
-  .log-item.ok .li-text { color:#aaa; }
-  .log-item.err .li-text { color:#ff9999; }
-  .copy-summary { padding:14px 18px; border-top:1px solid var(--border); background:var(--surface2); display:flex; gap:28px; flex-wrap:wrap; }
-
-  @media(max-width:600px) {
-    .kpi-row { grid-template-columns:repeat(2,1fr); }
-    .sr-body { grid-template-columns:1fr; max-height:none; }
+  @media(max-width:600px){
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+    .sr-body{grid-template-columns:1fr;max-height:none;}
   }
 </style>
 </head>
@@ -207,26 +199,22 @@
         <div class="step-desc">Sube el catálogo y extrae los códigos de cada página</div>
       </div>
     </div>
-
     <div class="drop-zone" id="dropZone">
       <input type="file" accept=".pdf" id="fileInput">
       <span class="drop-icon">📄</span>
       <div class="drop-title">Arrastra el PDF aquí o haz clic para seleccionar</div>
       <div class="drop-hint">Solo archivos .pdf</div>
     </div>
-
     <div class="file-info" id="fileInfo">
       <span style="font-size:1rem">📋</span>
       <span class="file-name" id="fileName"></span>
       <span class="file-pages" id="filePages"></span>
       <button class="btn-clear" id="btnClear">✕</button>
     </div>
-
     <div class="controls">
       <button class="btn-primary" id="btnExtract" disabled>Extraer Códigos</button>
       <button class="btn-secondary" id="btnExcel" disabled>↓ Excel</button>
     </div>
-
     <div class="progress-box" id="progressBox1">
       <div class="progress-header">
         <span class="progress-label">Analizando páginas…</span>
@@ -235,10 +223,8 @@
       <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill1"></div></div>
       <div class="progress-status" id="progressStatus1">Preparando…</div>
     </div>
-
     <div class="alert error" id="errorBox1"><span class="alert-icon">⚠️</span><span class="alert-text" id="errorText1"></span></div>
     <div class="alert warning" id="warningBox1"><span class="alert-icon">💡</span><span class="alert-text" id="warningText1"></span></div>
-
     <div class="results-box" id="resultsBox1">
       <div class="results-header">
         <div class="results-title">Códigos por página <span class="badge green" id="totalBadge1">0</span></div>
@@ -267,7 +253,6 @@
         <div class="step-desc">Indexa la carpeta de Drive y luego busca cada código en el índice local</div>
       </div>
     </div>
-
     <div class="folder-row">
       <span class="folder-icon">📁</span>
       <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0">
@@ -275,9 +260,7 @@
         <input class="folder-id-input" id="folderIdInput" value="1Ib2YutpSq2tOZQKqGzhvi6r5c-c64bGC" placeholder="ID de carpeta de Drive…">
       </div>
     </div>
-
     <button class="btn-full" id="btnIndex" disabled>① Indexar carpeta de Drive</button>
-
     <div class="progress-box" id="progressBox2">
       <div class="progress-header">
         <span class="progress-label" id="progressLabel2">Indexando carpeta…</span>
@@ -286,18 +269,14 @@
       <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill2"></div></div>
       <div class="progress-status" id="progressStatus2">Preparando…</div>
     </div>
-
     <div class="file-info" id="indexInfo">
       <span style="font-size:1rem">🗂️</span>
       <span class="file-name" id="indexCount"></span>
-      <span class="file-pages" id="indexFolder"></span>
+      <span class="file-pages" id="indexFolderLabel"></span>
       <button class="btn-clear" id="btnReindex" title="Reindexar">↺</button>
     </div>
-
     <div class="alert error" id="errorBox2"><span class="alert-icon">⚠️</span><span class="alert-text" id="errorText2"></span></div>
-
     <button class="btn-full" id="btnSearch" disabled>② Buscar códigos en el índice</button>
-
     <div class="search-results" id="searchResults">
       <div class="kpi-row">
         <div class="kpi-card"><span class="kpi-val accent" id="kpiTotal">0</span><span class="kpi-label">Buscados</span></div>
@@ -332,8 +311,6 @@
         <div class="step-desc">Descarga los archivos encontrados organizados en carpetas por página</div>
       </div>
     </div>
-
-    <!-- Carpeta destino -->
     <div class="dest-row">
       <span style="font-size:1.3rem">💾</span>
       <div class="dest-info">
@@ -342,12 +319,9 @@
       </div>
       <button class="btn-choose" id="btnChooseDir">Elegir carpeta</button>
     </div>
-
     <button class="btn-full" id="btnCopy" disabled>Copiar archivos al equipo</button>
-
     <div class="alert error" id="errorBox3"><span class="alert-icon">⚠️</span><span class="alert-text" id="errorText3"></span></div>
     <div class="alert warning" id="warningBox3"><span class="alert-icon">💡</span><span class="alert-text" id="warningText3"></span></div>
-
     <div class="progress-box" id="progressBox3">
       <div class="progress-header">
         <span class="progress-label">Copiando archivos…</span>
@@ -356,7 +330,6 @@
       <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill3"></div></div>
       <div class="progress-status" id="progressStatus3">Preparando…</div>
     </div>
-
     <div class="copy-log" id="copyLog">
       <div class="copy-log-header">
         <span class="copy-log-title">Log de copia</span>
@@ -369,397 +342,403 @@
         <div class="stat"><span class="stat-val" id="copyStatFolders">0</span><span class="stat-label">Carpetas creadas</span></div>
       </div>
     </div>
-
   </div>
 
 </main>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
-const CFG = (typeof window.CATALOGO_EXTRACTOR_CONFIG !== 'undefined')
-  ? window.CATALOGO_EXTRACTOR_CONFIG : { apiKey:'', clientId:'' };
-const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+// ─── INIT ────────────────────────────────────────────────────────────────────
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const CFG = (typeof window.CATALOGO_EXTRACTOR_CONFIG !== 'undefined') ? window.CATALOGO_EXTRACTOR_CONFIG : {apiKey:'',clientId:''};
+
+// Load Google GSI
+(function(){ var s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; document.head.appendChild(s); })();
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
-let pdfFile      = null;
-let pageResults  = [];   // [{page, codes:[]}]
-let allCodes     = [];   // flat unique
-let accessToken  = null;
-let searchReport = [];   // [{code, pages:[], found, fileId, fileName}]
-let destDirHandle= null; // FileSystemDirectoryHandle
+var pdfFile=null, pageResults=[], allCodes=[], accessToken=null, driveIndex=null, searchReport=[], destDirHandle=null;
 
 // ─── DOM ─────────────────────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-const btnAuth=$('btnAuth'), authLabel=$('authLabel');
-const dropZone=$('dropZone'), fileInput=$('fileInput'), fileInfo=$('fileInfo');
-const fileName=$('fileName'), filePages=$('filePages'), btnClear=$('btnClear');
-const btnExtract=$('btnExtract'), btnExcel=$('btnExcel'), btnExcel2=$('btnExcel2'), btnCopy1=$('btnCopy1');
-const progressBox1=$('progressBox1'), progressCount1=$('progressCount1'), progressFill1=$('progressFill1'), progressStatus1=$('progressStatus1');
-const errorBox1=$('errorBox1'), errorText1=$('errorText1'), warningBox1=$('warningBox1'), warningText1=$('warningText1');
-const resultsBox1=$('resultsBox1'), totalBadge1=$('totalBadge1'), pagesList1=$('pagesList1');
-const statCodes1=$('statCodes1'), statPagesW1=$('statPagesW1'), statPages1=$('statPages1');
-const step2Num=$('step2Num'), step3Num=$('step3Num');
-const folderIdInput=$('folderIdInput'), btnSearch=$('btnSearch');
-const progressBox2=$('progressBox2'), progressCount2=$('progressCount2'), progressFill2=$('progressFill2'), progressStatus2=$('progressStatus2');
-const errorBox2=$('errorBox2'), errorText2=$('errorText2');
-const searchResults=$('searchResults');
-const kpiTotal=$('kpiTotal'), kpiFound=$('kpiFound'), kpiNotFound=$('kpiNotFound'), kpiPct=$('kpiPct');
-const srFoundList=$('srFoundList'), srNotFoundList=$('srNotFoundList'), srFoundCount=$('srFoundCount'), srNotFoundCount=$('srNotFoundCount');
-const btnExcelReport=$('btnExcelReport');
-const destPath=$('destPath'), btnChooseDir=$('btnChooseDir'), btnCopy=$('btnCopy');
-const errorBox3=$('errorBox3'), errorText3=$('errorText3'), warningBox3=$('warningBox3'), warningText3=$('warningText3');
-const progressBox3=$('progressBox3'), progressCount3=$('progressCount3'), progressFill3=$('progressFill3'), progressStatus3=$('progressStatus3');
-const copyLog=$('copyLog'), logList=$('logList'), copyLogBadge=$('copyLogBadge');
-const copyStatOk=$('copyStatOk'), copyStatErr=$('copyStatErr'), copyStatFolders=$('copyStatFolders');
+var btnAuth=document.getElementById('btnAuth'),
+    authLabel=document.getElementById('authLabel'),
+    dropZone=document.getElementById('dropZone'),
+    fileInput=document.getElementById('fileInput'),
+    fileInfo=document.getElementById('fileInfo'),
+    fileName=document.getElementById('fileName'),
+    filePages=document.getElementById('filePages'),
+    btnClear=document.getElementById('btnClear'),
+    btnExtract=document.getElementById('btnExtract'),
+    btnExcel=document.getElementById('btnExcel'),
+    btnExcel2=document.getElementById('btnExcel2'),
+    btnCopy1=document.getElementById('btnCopy1'),
+    progressBox1=document.getElementById('progressBox1'),
+    progressCount1=document.getElementById('progressCount1'),
+    progressFill1=document.getElementById('progressFill1'),
+    progressStatus1=document.getElementById('progressStatus1'),
+    errorBox1=document.getElementById('errorBox1'),
+    errorText1=document.getElementById('errorText1'),
+    warningBox1=document.getElementById('warningBox1'),
+    warningText1=document.getElementById('warningText1'),
+    resultsBox1=document.getElementById('resultsBox1'),
+    totalBadge1=document.getElementById('totalBadge1'),
+    pagesList1=document.getElementById('pagesList1'),
+    statCodes1=document.getElementById('statCodes1'),
+    statPagesW1=document.getElementById('statPagesW1'),
+    statPages1=document.getElementById('statPages1'),
+    step2Num=document.getElementById('step2Num'),
+    step3Num=document.getElementById('step3Num'),
+    folderIdInput=document.getElementById('folderIdInput'),
+    btnIndex=document.getElementById('btnIndex'),
+    progressBox2=document.getElementById('progressBox2'),
+    progressLabel2=document.getElementById('progressLabel2'),
+    progressCount2=document.getElementById('progressCount2'),
+    progressFill2=document.getElementById('progressFill2'),
+    progressStatus2=document.getElementById('progressStatus2'),
+    indexInfo=document.getElementById('indexInfo'),
+    indexCount=document.getElementById('indexCount'),
+    indexFolderLabel=document.getElementById('indexFolderLabel'),
+    btnReindex=document.getElementById('btnReindex'),
+    errorBox2=document.getElementById('errorBox2'),
+    errorText2=document.getElementById('errorText2'),
+    btnSearch=document.getElementById('btnSearch'),
+    searchResults=document.getElementById('searchResults'),
+    kpiTotal=document.getElementById('kpiTotal'),
+    kpiFound=document.getElementById('kpiFound'),
+    kpiNotFound=document.getElementById('kpiNotFound'),
+    kpiPct=document.getElementById('kpiPct'),
+    srFoundList=document.getElementById('srFoundList'),
+    srNotFoundList=document.getElementById('srNotFoundList'),
+    srFoundCount=document.getElementById('srFoundCount'),
+    srNotFoundCount=document.getElementById('srNotFoundCount'),
+    btnExcelReport=document.getElementById('btnExcelReport'),
+    destPath=document.getElementById('destPath'),
+    btnChooseDir=document.getElementById('btnChooseDir'),
+    btnCopy=document.getElementById('btnCopy'),
+    errorBox3=document.getElementById('errorBox3'),
+    errorText3=document.getElementById('errorText3'),
+    warningBox3=document.getElementById('warningBox3'),
+    warningText3=document.getElementById('warningText3'),
+    progressBox3=document.getElementById('progressBox3'),
+    progressCount3=document.getElementById('progressCount3'),
+    progressFill3=document.getElementById('progressFill3'),
+    progressStatus3=document.getElementById('progressStatus3'),
+    copyLog=document.getElementById('copyLog'),
+    logList=document.getElementById('logList'),
+    copyLogBadge=document.getElementById('copyLogBadge'),
+    copyStatOk=document.getElementById('copyStatOk'),
+    copyStatErr=document.getElementById('copyStatErr'),
+    copyStatFolders=document.getElementById('copyStatFolders');
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function showAlert(box,el,msg){ box.classList.add('visible'); el.textContent=msg; }
+function hide(){ for(var i=0;i<arguments.length;i++) arguments[i].classList.remove('visible'); }
 
 // ─── GOOGLE AUTH ─────────────────────────────────────────────────────────────
-(function(){ const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; document.head.appendChild(s); })();
-
-btnAuth.addEventListener('click', () => {
-  if (accessToken) {
-    accessToken = null;
-    btnAuth.classList.remove('connected');
-    authLabel.textContent = 'Conectar con Google';
-    btnSearch.disabled = true; btnCopy.disabled = true;
+btnAuth.addEventListener('click', function(){
+  if(accessToken){
+    accessToken=null; driveIndex=null;
+    btnAuth.classList.remove('connected'); authLabel.textContent='Conectar con Google';
+    btnIndex.disabled=true; btnSearch.disabled=true; btnCopy.disabled=true;
+    hide(indexInfo,searchResults);
     return;
   }
-  if (!CFG.clientId) { alert('Falta config.js con clientId.'); return; }
+  if(!CFG.clientId){ alert('Falta config.js con clientId.'); return; }
   google.accounts.oauth2.initTokenClient({
-    client_id: CFG.clientId, scope: SCOPES,
-    callback: resp => {
-      if (resp.error) { showAlert(errorBox2, errorText2, 'Auth error: ' + resp.error); return; }
-      accessToken = resp.access_token;
-      btnAuth.classList.add('connected');
-      authLabel.textContent = 'Google conectado ✓';
-      if (allCodes.length > 0 && driveIndex) btnSearch.disabled = false;
-      if (allCodes.length > 0) btnIndex.disabled = false;
+    client_id:CFG.clientId, scope:'https://www.googleapis.com/auth/drive.readonly',
+    callback:function(resp){
+      if(resp.error){ showAlert(errorBox2,errorText2,'Auth error: '+resp.error); return; }
+      accessToken=resp.access_token;
+      btnAuth.classList.add('connected'); authLabel.textContent='Google conectado ✓';
+      btnIndex.disabled=false;
     }
   }).requestAccessToken();
 });
 
 // ─── PASO 1 — PDF ────────────────────────────────────────────────────────────
-const CODE_REGEX = /[Cc][Óó][Dd][Ii][Gg][Oo]\s*:?\s*(\d{4,6})/g;
-function extractCodesFromText(text) {
-  const found=[]; let m; CODE_REGEX.lastIndex=0;
+var CODE_REGEX=/[Cc][Óó][Dd][Ii][Gg][Oo]\s*:?\s*(\d{4,6})/g;
+function extractCodes(text){
+  var found=[],m; CODE_REGEX.lastIndex=0;
   while((m=CODE_REGEX.exec(text))!==null) found.push(m[1]);
   return found;
 }
 
-dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e=>{ e.preventDefault(); dropZone.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f&&f.type==='application/pdf') loadFile(f); else showAlert(errorBox1,errorText1,'Solo archivos PDF.'); });
-fileInput.addEventListener('change', ()=>{ if(fileInput.files[0]) loadFile(fileInput.files[0]); });
+dropZone.addEventListener('dragover',function(e){ e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave',function(){ dropZone.classList.remove('dragover'); });
+dropZone.addEventListener('drop',function(e){
+  e.preventDefault(); dropZone.classList.remove('dragover');
+  var f=e.dataTransfer.files[0];
+  if(f&&f.type==='application/pdf') loadFile(f);
+  else showAlert(errorBox1,errorText1,'Solo archivos PDF.');
+});
+fileInput.addEventListener('change',function(){ if(fileInput.files[0]) loadFile(fileInput.files[0]); });
 
-async function loadFile(f) {
+function loadFile(f){
   pdfFile=f; pageResults=[]; allCodes=[];
   fileName.textContent=f.name; fileInfo.classList.add('visible');
-  hideStep1(); btnExtract.disabled=false; btnExcel.disabled=true;
-  btnSearch.disabled=true; btnCopy.disabled=true;
+  hide(progressBox1,errorBox1,warningBox1,resultsBox1);
+  btnExtract.disabled=false; btnExcel.disabled=true; btnSearch.disabled=true; btnCopy.disabled=true;
   step2Num.classList.remove('active','done'); step3Num.classList.remove('active','done');
-  try { const ab=await f.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:ab}).promise; filePages.textContent=pdf.numPages+' página'+(pdf.numPages!==1?'s':''); } catch(e){}
+  f.arrayBuffer().then(function(ab){
+    return pdfjsLib.getDocument({data:ab}).promise;
+  }).then(function(pdf){
+    filePages.textContent=pdf.numPages+' página'+(pdf.numPages!==1?'s':'');
+  }).catch(function(){});
 }
 
-btnClear.addEventListener('click', ()=>{
+btnClear.addEventListener('click',function(){
   pdfFile=null; pageResults=[]; allCodes=[]; fileInput.value='';
-  fileInfo.classList.remove('visible'); btnExtract.disabled=true; btnExcel.disabled=true;
-  btnSearch.disabled=true; btnCopy.disabled=true; if(typeof btnIndex!=='undefined') btnIndex.disabled=true; hideStep1();
+  fileInfo.classList.remove('visible');
+  btnExtract.disabled=true; btnExcel.disabled=true; btnSearch.disabled=true; btnCopy.disabled=true;
+  hide(progressBox1,errorBox1,warningBox1,resultsBox1);
   step2Num.classList.remove('active','done'); step3Num.classList.remove('active','done');
 });
 
-btnExtract.addEventListener('click', async ()=>{
-  if(!pdfFile) return;
-  hideStep1(); btnExtract.disabled=true; btnExcel.disabled=true; btnSearch.disabled=true; btnCopy.disabled=true;
-  progressBox1.classList.add('visible'); pageResults=[]; allCodes=[];
+btnExtract.addEventListener('click',function(){ runExtraction(); });
 
-  try {
-    const ab=await pdfFile.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:ab}).promise; const total=pdf.numPages;
-    for(let p=1;p<=total;p++){
+async function runExtraction(){
+  if(!pdfFile) return;
+  hide(progressBox1,errorBox1,warningBox1,resultsBox1);
+  btnExtract.disabled=true; btnExcel.disabled=true; btnSearch.disabled=true; btnCopy.disabled=true;
+  progressBox1.classList.add('visible'); pageResults=[]; allCodes=[];
+  try{
+    var ab=await pdfFile.arrayBuffer();
+    var pdf=await pdfjsLib.getDocument({data:ab}).promise;
+    var total=pdf.numPages;
+    for(var p=1;p<=total;p++){
       progressStatus1.textContent='Procesando página '+p+' de '+total+'…';
       progressCount1.textContent=p+' / '+total;
       progressFill1.style.width=Math.round((p/total)*100)+'%';
-      const page=await pdf.getPage(p); const content=await page.getTextContent();
-      pageResults.push({page:p, codes:extractCodesFromText(content.items.map(i=>i.str).join(' '))});
+      var page=await pdf.getPage(p);
+      var content=await page.getTextContent();
+      pageResults.push({page:p, codes:extractCodes(content.items.map(function(i){return i.str;}).join(' '))});
     }
     progressBox1.classList.remove('visible');
-    const seen=new Set(); pageResults.forEach(r=>r.codes.forEach(c=>seen.add(c)));
-    allCodes=[...seen].sort((a,b)=>Number(a)-Number(b));
-    const totalCodes=pageResults.reduce((s,r)=>s+r.codes.length,0);
+    var seen=new Set(); pageResults.forEach(function(r){ r.codes.forEach(function(c){ seen.add(c); }); });
+    allCodes=Array.from(seen).sort(function(a,b){return Number(a)-Number(b);});
+    var totalCodes=pageResults.reduce(function(s,r){return s+r.codes.length;},0);
     if(totalCodes===0){
-      showAlert(warningBox1,warningText1,'No se encontraron códigos.\n\nEl PDF puede ser una imagen escaneada (sin texto seleccionable).\nPrueba seleccionar texto con el cursor en el PDF.');
+      showAlert(warningBox1,warningText1,'No se encontraron códigos.\n\nEl PDF puede ser una imagen escaneada.\nPrueba seleccionar texto con el cursor en el PDF.');
     } else {
       renderStep1(pageResults,total,totalCodes);
-      btnExcel.disabled=false; step2Num.classList.add('active');
-      btnIndex.disabled = !accessToken ? true : false;
-      if(accessToken && driveIndex) btnSearch.disabled=false;
+      btnExcel.disabled=false;
+      step2Num.classList.add('active');
+      if(accessToken) btnIndex.disabled=false;
     }
   } catch(err){ progressBox1.classList.remove('visible'); showAlert(errorBox1,errorText1,'Error: '+err.message); }
-  finally { btnExtract.disabled=false; }
-});
+  finally{ btnExtract.disabled=false; }
+}
 
 function renderStep1(results,totalPages,totalCodes){
   resultsBox1.classList.add('visible');
-  const pw=results.filter(r=>r.codes.length>0).length;
+  var pw=results.filter(function(r){return r.codes.length>0;}).length;
   totalBadge1.textContent=totalCodes+' códigos'; statCodes1.textContent=totalCodes; statPagesW1.textContent=pw; statPages1.textContent=totalPages;
   pagesList1.innerHTML='';
-  results.forEach(r=>{
-    const row=document.createElement('div'); row.className='page-row';
-    const lbl=document.createElement('div'); lbl.className='page-label';
+  results.forEach(function(r){
+    var row=document.createElement('div'); row.className='page-row';
+    var lbl=document.createElement('div'); lbl.className='page-label';
     lbl.innerHTML='<span class="page-num">Pág '+r.page+'</span><span class="page-count-badge">'+(r.codes.length>0?r.codes.length+' cód.':'sin códigos')+'</span>';
-    const cd=document.createElement('div'); cd.className='page-codes';
-    if(r.codes.length===0){ const e=document.createElement('span'); e.className='no-codes'; e.textContent='—'; cd.appendChild(e); }
-    else r.codes.forEach(c=>{ const ch=document.createElement('span'); ch.className='code-chip'; ch.textContent=c; cd.appendChild(ch); });
+    var cd=document.createElement('div'); cd.className='page-codes';
+    if(r.codes.length===0){ var e=document.createElement('span'); e.className='no-codes'; e.textContent='—'; cd.appendChild(e); }
+    else r.codes.forEach(function(c){ var ch=document.createElement('span'); ch.className='code-chip'; ch.textContent=c; cd.appendChild(ch); });
     row.appendChild(lbl); row.appendChild(cd); pagesList1.appendChild(row);
   });
 }
 
-btnCopy1.addEventListener('click', ()=>{
-  const t=pageResults.filter(r=>r.codes.length>0).map(r=>'Pág '+r.page+': '+r.codes.join(', ')).join('\n');
-  navigator.clipboard.writeText(t).then(()=>{ btnCopy1.textContent='✓ Copiado'; setTimeout(()=>btnCopy1.textContent='Copiar todo',2000); });
+btnCopy1.addEventListener('click',function(){
+  var t=pageResults.filter(function(r){return r.codes.length>0;}).map(function(r){return 'Pág '+r.page+': '+r.codes.join(', ');}).join('\n');
+  navigator.clipboard.writeText(t).then(function(){ btnCopy1.textContent='✓ Copiado'; setTimeout(function(){btnCopy1.textContent='Copiar todo';},2000); });
 });
-function dlStep1Excel(){
+function dlExcel1(){
   if(!pageResults.length) return;
-  const rows=[['Página','Código']];
-  pageResults.forEach(r=>{ if(r.codes.length===0) rows.push(['Pág '+r.page,'']); else r.codes.forEach(c=>rows.push(['Pág '+r.page,c])); });
-  const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:12},{wch:14}];
-  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Códigos por Página');
+  var rows=[['Página','Código']];
+  pageResults.forEach(function(r){ if(r.codes.length===0) rows.push(['Pág '+r.page,'']); else r.codes.forEach(function(c){rows.push(['Pág '+r.page,c]);}); });
+  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:12},{wch:14}];
+  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Códigos por Página');
   XLSX.writeFile(wb,'codigos_'+(pdfFile?pdfFile.name:'catalogo').replace(/\.pdf$/i,'')+'.xlsx');
 }
-btnExcel.addEventListener('click', dlStep1Excel);
-btnExcel2.addEventListener('click', dlStep1Excel);
+btnExcel.addEventListener('click',dlExcel1);
+btnExcel2.addEventListener('click',dlExcel1);
 
-// ─── PASO 2 — INDEX + SEARCH ─────────────────────────────────────────────────
-let driveIndex = null; // Map: baseName → {id, name, mimeType}
-
-const btnIndex   = $('btnIndex');
-const indexInfo  = $('indexInfo');
-const indexCount = $('indexCount');
-const indexFolder= $('indexFolder');
-const btnReindex = $('btnReindex');
-const progressLabel2 = $('progressLabel2');
-
-// Indexar: lista TODOS los archivos de la carpeta paginando
-async function indexFolder(folderId){
-  let allFiles = [];
-  let pageToken = null;
-  let page = 1;
-  do {
-    let url = 'https://www.googleapis.com/drive/v3/files'
-      + '?q='+encodeURIComponent("'"+folderId+"' in parents and trashed=false")
-      + '&fields=nextPageToken,files(id,name,mimeType)'
-      + '&pageSize=1000';
-    if(pageToken) url += '&pageToken='+encodeURIComponent(pageToken);
-    const res = await fetch(url, {headers:{Authorization:'Bearer '+accessToken}});
-    if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||'Drive error '+res.status); }
-    const data = await res.json();
-    allFiles = allFiles.concat(data.files||[]);
-    pageToken = data.nextPageToken||null;
-    progressStatus2.textContent = 'Cargando archivos… '+allFiles.length+' encontrados';
-    page++;
-  } while(pageToken);
-  return allFiles;
-}
-
-btnIndex.addEventListener('click', runIndex);
-btnReindex.addEventListener('click', ()=>{ driveIndex=null; indexInfo.classList.remove('visible'); btnSearch.disabled=true; hideStep2results(); runIndex(); });
-
+// ─── PASO 2A — INDEXAR ───────────────────────────────────────────────────────
 async function runIndex(){
-  if(!accessToken){ showAlert(errorBox2,errorText2,'Primero conecta con Google (botón arriba).'); return; }
-  const folderId=folderIdInput.value.trim()||'1Ib2YutpSq2tOZQKqGzhvi6r5c-c64bGC';
+  if(!accessToken){ showAlert(errorBox2,errorText2,'Primero conecta con Google.'); return; }
+  var folderId=folderIdInput.value.trim()||'1Ib2YutpSq2tOZQKqGzhvi6r5c-c64bGC';
   errorBox2.classList.remove('visible');
+  hide(indexInfo,searchResults);
   btnIndex.disabled=true; progressBox2.classList.add('visible');
-  progressLabel2.textContent='Indexando carpeta…'; progressFill2.style.width='0%';
+  progressLabel2.textContent='Indexando carpeta…'; progressFill2.style.width='30%';
   progressStatus2.textContent='Conectando con Drive…'; progressCount2.textContent='';
 
-  try {
-    const files = await indexFolder(folderId);
+  try{
+    var allFiles=[], pageToken=null;
+    do{
+      var url='https://www.googleapis.com/drive/v3/files'
+        +'?q='+encodeURIComponent("'"+folderId+"' in parents and trashed=false")
+        +'&fields=nextPageToken,files(id,name,mimeType)&pageSize=1000';
+      if(pageToken) url+='&pageToken='+encodeURIComponent(pageToken);
+      var res=await fetch(url,{headers:{Authorization:'Bearer '+accessToken}});
+      if(!res.ok){ var e=await res.json(); throw new Error(e.error?e.error.message:'Drive error '+res.status); }
+      var data=await res.json();
+      allFiles=allFiles.concat(data.files||[]);
+      pageToken=data.nextPageToken||null;
+      progressStatus2.textContent='Cargando… '+allFiles.length+' archivos encontrados';
+      progressFill2.style.width=pageToken?'60%':'90%';
+    } while(pageToken);
 
-    // Build index: baseName (sin extensión) → file info
-    driveIndex = new Map();
-    files.forEach(f=>{
-      const base = f.name.includes('.') ? f.name.substring(0,f.name.lastIndexOf('.')) : f.name;
-      if(!driveIndex.has(base)) driveIndex.set(base, f); // keep first match
+    // Build index: baseName → file
+    driveIndex=new Map();
+    allFiles.forEach(function(f){
+      var base=f.name.includes('.')?f.name.substring(0,f.name.lastIndexOf('.')):f.name;
+      if(!driveIndex.has(base)) driveIndex.set(base,f);
     });
 
     progressFill2.style.width='100%';
     progressBox2.classList.remove('visible');
-
-    indexCount.textContent = files.length+' archivos indexados';
-    indexFolder.textContent = folderId.substring(0,24)+'…';
+    indexCount.textContent=allFiles.length+' archivos indexados';
+    indexFolderLabel.textContent='en carpeta destino';
     indexInfo.classList.add('visible');
-
     if(allCodes.length>0) btnSearch.disabled=false;
 
   } catch(err){
     progressBox2.classList.remove('visible');
     showAlert(errorBox2,errorText2,'Error al indexar: '+err.message);
-  } finally { btnIndex.disabled=false; }
+  } finally{ btnIndex.disabled=false; }
 }
 
-btnSearch.addEventListener('click', ()=>{
+btnIndex.addEventListener('click',function(){ runIndex(); });
+btnReindex.addEventListener('click',function(){
+  driveIndex=null; hide(indexInfo,searchResults); btnSearch.disabled=true; runIndex();
+});
+
+// ─── PASO 2B — BUSCAR EN ÍNDICE ──────────────────────────────────────────────
+btnSearch.addEventListener('click',function(){
   if(!driveIndex){ showAlert(errorBox2,errorText2,'Primero indexa la carpeta (botón ①).'); return; }
   if(!allCodes.length){ showAlert(errorBox2,errorText2,'Primero extrae los códigos (Paso 1).'); return; }
 
-  hideStep2results(); searchReport=[];
+  hide(searchResults); searchReport=[];
+  var codePageMap={};
+  pageResults.forEach(function(r){ r.codes.forEach(function(c){ if(!codePageMap[c]) codePageMap[c]=[]; codePageMap[c].push(r.page); }); });
 
-  const codePageMap={};
-  pageResults.forEach(r=>r.codes.forEach(c=>{ if(!codePageMap[c]) codePageMap[c]=[]; codePageMap[c].push(r.page); }));
-
-  allCodes.forEach(code=>{
+  allCodes.forEach(function(code){
     if(driveIndex.has(code)){
-      const f=driveIndex.get(code);
-      searchReport.push({code,pages:codePageMap[code]||[],found:true,fileId:f.id,fileName:f.name,mimeType:f.mimeType});
+      var f=driveIndex.get(code);
+      searchReport.push({code:code,pages:codePageMap[code]||[],found:true,fileId:f.id,fileName:f.name,mimeType:f.mimeType});
     } else {
-      searchReport.push({code,pages:codePageMap[code]||[],found:false});
+      searchReport.push({code:code,pages:codePageMap[code]||[],found:false});
     }
   });
 
   renderSearchResults(searchReport);
   step2Num.classList.remove('active'); step2Num.classList.add('done');
   step3Num.classList.add('active');
-  if(destDirHandle && searchReport.some(r=>r.found)) btnCopy.disabled=false;
+  if(destDirHandle&&searchReport.some(function(r){return r.found;})) btnCopy.disabled=false;
 });
 
 function renderSearchResults(report){
   searchResults.classList.add('visible');
-  const found=report.filter(r=>r.found), nf=report.filter(r=>!r.found);
-  const pct=report.length>0?Math.round((found.length/report.length)*100):0;
+  var found=report.filter(function(r){return r.found;}), nf=report.filter(function(r){return !r.found;});
+  var pct=report.length>0?Math.round((found.length/report.length)*100):0;
   kpiTotal.textContent=report.length; kpiFound.textContent=found.length; kpiNotFound.textContent=nf.length; kpiPct.textContent=pct+'%';
   srFoundCount.textContent=found.length; srNotFoundCount.textContent=nf.length;
-  srFoundList.innerHTML=''; found.forEach(r=>{ const d=document.createElement('div'); d.className='sr-item found'; d.innerHTML='<span class="sr-dot found"></span><span>'+r.code+'</span><span class="sr-page">Pág '+r.pages.join(', ')+'</span>'; srFoundList.appendChild(d); });
-  srNotFoundList.innerHTML=''; nf.forEach(r=>{ const d=document.createElement('div'); d.className='sr-item notfound'; d.innerHTML='<span class="sr-dot notfound"></span><span>'+r.code+'</span><span class="sr-page">Pág '+r.pages.join(', ')+'</span>'; srNotFoundList.appendChild(d); });
+  srFoundList.innerHTML=''; found.forEach(function(r){ var d=document.createElement('div'); d.className='sr-item found'; d.innerHTML='<span class="sr-dot found"></span><span>'+r.code+'</span><span class="sr-page">Pág '+r.pages.join(', ')+'</span>'; srFoundList.appendChild(d); });
+  srNotFoundList.innerHTML=''; nf.forEach(function(r){ var d=document.createElement('div'); d.className='sr-item notfound'; d.innerHTML='<span class="sr-dot notfound"></span><span>'+r.code+'</span><span class="sr-page">Pág '+r.pages.join(', ')+'</span>'; srNotFoundList.appendChild(d); });
 }
 
-btnExcelReport.addEventListener('click', ()=>{
+btnExcelReport.addEventListener('click',function(){
   if(!searchReport.length) return;
-  const rows=[['Código','Página(s)','Estado']];
-  searchReport.forEach(r=>rows.push([r.code,'Pág '+r.pages.join(', '),r.found?'ENCONTRADO':'NO ENCONTRADO']));
-  const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:12},{wch:16},{wch:18}];
-  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Informe');
-  const found=searchReport.filter(r=>r.found);
-  if(found.length){ const ws2=XLSX.utils.aoa_to_sheet([['Código','Página(s)']].concat(found.map(r=>[r.code,'Pág '+r.pages.join(', ')]))); ws2['!cols']=[{wch:12},{wch:16}]; XLSX.utils.book_append_sheet(wb,ws2,'Encontrados'); }
-  const nf=searchReport.filter(r=>!r.found);
-  if(nf.length){ const ws3=XLSX.utils.aoa_to_sheet([['Código','Página(s)']].concat(nf.map(r=>[r.code,'Pág '+r.pages.join(', ')]))); ws3['!cols']=[{wch:12},{wch:16}]; XLSX.utils.book_append_sheet(wb,ws3,'No Encontrados'); }
+  var rows=[['Código','Página(s)','Estado']];
+  searchReport.forEach(function(r){rows.push([r.code,'Pág '+r.pages.join(', '),r.found?'ENCONTRADO':'NO ENCONTRADO']);});
+  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:12},{wch:16},{wch:18}];
+  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Informe');
+  var found=searchReport.filter(function(r){return r.found;});
+  if(found.length){ var ws2=XLSX.utils.aoa_to_sheet([['Código','Página(s)']].concat(found.map(function(r){return [r.code,'Pág '+r.pages.join(', ')];}))); ws2['!cols']=[{wch:12},{wch:16}]; XLSX.utils.book_append_sheet(wb,ws2,'Encontrados'); }
+  var nf=searchReport.filter(function(r){return !r.found;});
+  if(nf.length){ var ws3=XLSX.utils.aoa_to_sheet([['Código','Página(s)']].concat(nf.map(function(r){return [r.code,'Pág '+r.pages.join(', ')];}))); ws3['!cols']=[{wch:12},{wch:16}]; XLSX.utils.book_append_sheet(wb,ws3,'No Encontrados'); }
   XLSX.writeFile(wb,'informe_drive_'+(pdfFile?pdfFile.name:'catalogo').replace(/\.pdf$/i,'')+'.xlsx');
 });
 
 // ─── PASO 3 — COPIA LOCAL ────────────────────────────────────────────────────
-btnChooseDir.addEventListener('click', async ()=>{
-  if(!window.showDirectoryPicker){ showAlert(warningBox3,warningText3,'Tu navegador no soporta esta función.\nUsa Chrome o Edge versión 86 o superior.'); return; }
-  try {
-    destDirHandle = await window.showDirectoryPicker({mode:'readwrite'});
-    destPath.textContent = destDirHandle.name;
-    destPath.classList.remove('empty');
-    if(searchReport.some(r=>r.found)) btnCopy.disabled=false;
+btnChooseDir.addEventListener('click',async function(){
+  if(!window.showDirectoryPicker){ showAlert(warningBox3,warningText3,'Tu navegador no soporta esta función.\nUsa Chrome o Edge 86+.'); return; }
+  try{
+    destDirHandle=await window.showDirectoryPicker({mode:'readwrite'});
+    destPath.textContent=destDirHandle.name; destPath.classList.remove('empty');
+    if(searchReport.some(function(r){return r.found;})) btnCopy.disabled=false;
   } catch(e){ if(e.name!=='AbortError') showAlert(errorBox3,errorText3,'No se pudo seleccionar la carpeta: '+e.message); }
 });
 
-btnCopy.addEventListener('click', runCopy);
+btnCopy.addEventListener('click',function(){ runCopy(); });
 
 async function runCopy(){
   if(!destDirHandle){ showAlert(errorBox3,errorText3,'Elige una carpeta destino primero.'); return; }
-  if(!accessToken){ showAlert(errorBox3,errorText3,'Reconecta con Google (el token puede haber expirado).'); return; }
-
-  const foundItems = searchReport.filter(r=>r.found);
+  if(!accessToken){ showAlert(errorBox3,errorText3,'Reconecta con Google.'); return; }
+  var foundItems=searchReport.filter(function(r){return r.found;});
   if(!foundItems.length){ showAlert(warningBox3,warningText3,'No hay archivos encontrados para copiar.'); return; }
 
-  hideStep3(); btnCopy.disabled=true; progressBox3.classList.add('visible');
+  hide(errorBox3,warningBox3,copyLog);
+  btnCopy.disabled=true; progressBox3.classList.add('visible');
   copyLog.classList.add('visible'); logList.innerHTML='';
 
-  // Build: page → [items]  (a code can appear in multiple pages — use first page)
-  const pageMap = {}; // page number → [{code, fileId, fileName, mimeType}]
-  foundItems.forEach(item=>{
-    const pg = item.pages[0]; // primary page
+  // Agrupar por página primaria
+  var pageMap={};
+  foundItems.forEach(function(item){
+    var pg=item.pages[0];
     if(!pageMap[pg]) pageMap[pg]=[];
     pageMap[pg].push(item);
   });
 
-  const pages = Object.keys(pageMap).map(Number).sort((a,b)=>a-b);
-  let totalFiles=foundItems.length, done=0, okCount=0, errCount=0, folderCount=0;
+  var pages=Object.keys(pageMap).map(Number).sort(function(a,b){return a-b;});
+  var totalFiles=foundItems.length, done=0, okCount=0, errCount=0, folderCount=0;
 
-  try {
-    for(const pg of pages){
-      const folderName='Pag '+pg;
+  try{
+    for(var pi=0;pi<pages.length;pi++){
+      var pg=pages[pi];
+      var folderName='Pag '+pg;
       progressStatus3.textContent='Creando carpeta '+folderName+'…';
-
-      // Create subfolder
-      let subDir;
-      try { subDir = await destDirHandle.getDirectoryHandle(folderName,{create:true}); folderCount++; }
+      var subDir;
+      try{ subDir=await destDirHandle.getDirectoryHandle(folderName,{create:true}); folderCount++; }
       catch(e){ addLog('err','📁','No se pudo crear '+folderName,e.message); continue; }
-
       addLog('ok','📁','<span>'+folderName+'</span> creada','');
 
-      for(const item of pageMap[pg]){
-        done++;
+      var items=pageMap[pg];
+      for(var ii=0;ii<items.length;ii++){
+        var item=items[ii]; done++;
         progressCount3.textContent=done+' / '+totalFiles;
         progressFill3.style.width=Math.round((done/totalFiles)*100)+'%';
         progressStatus3.textContent='Copiando '+item.code+'…';
-
-        try {
-          // Download from Drive
-          const res = await fetch('https://www.googleapis.com/drive/v3/files/'+item.fileId+'?alt=media',
-            {headers:{Authorization:'Bearer '+accessToken}});
+        try{
+          var res=await fetch('https://www.googleapis.com/drive/v3/files/'+item.fileId+'?alt=media',{headers:{Authorization:'Bearer '+accessToken}});
           if(!res.ok) throw new Error('HTTP '+res.status);
-          const blob = await res.blob();
-
-          // Determine extension from mimeType if fileName has none
-          let saveName = item.fileName || item.code;
-          if(!saveName.includes('.')) {
-            const ext = mimeToExt(item.mimeType);
-            if(ext) saveName = saveName+ext;
-          }
-
-          // Write to subfolder
-          const fh = await subDir.getFileHandle(saveName,{create:true});
-          const w  = await fh.createWritable();
+          var blob=await res.blob();
+          var saveName=item.fileName||item.code;
+          if(!saveName.includes('.')){ var ext=mimeToExt(item.mimeType); if(ext) saveName+=ext; }
+          var fh=await subDir.getFileHandle(saveName,{create:true});
+          var w=await fh.createWritable();
           await w.write(blob); await w.close();
-
-          okCount++;
-          addLog('ok','✓',item.code,'→ '+folderName+'/'+saveName);
-        } catch(e){
-          errCount++;
-          addLog('err','✗',item.code,e.message);
-        }
-
+          okCount++; addLog('ok','✓',item.code,'→ '+folderName+'/'+saveName);
+        } catch(e){ errCount++; addLog('err','✗',item.code,e.message); }
         copyLogBadge.textContent=(okCount+errCount)+' archivos';
         copyStatOk.textContent=okCount; copyStatErr.textContent=errCount; copyStatFolders.textContent=folderCount;
-        await new Promise(r=>setTimeout(r,50));
+        await new Promise(function(r){setTimeout(r,50);});
       }
     }
-
-    progressFill3.style.width='100%';
-    progressBox3.classList.remove('visible');
-    copyStatOk.textContent=okCount; copyStatErr.textContent=errCount; copyStatFolders.textContent=folderCount;
+    progressFill3.style.width='100%'; progressBox3.classList.remove('visible');
     step3Num.classList.remove('active'); step3Num.classList.add('done');
-
   } catch(err){
     progressBox3.classList.remove('visible');
-    showAlert(errorBox3,errorText3,'Error durante la copia: '+err.message);
-  } finally {
-    btnCopy.disabled=false;
-  }
+    showAlert(errorBox3,errorText3,'Error: '+err.message);
+  } finally{ btnCopy.disabled=false; }
 }
 
-function addLog(type, icon, main, detail){
-  const d=document.createElement('div'); d.className='log-item '+type;
+function addLog(type,icon,main,detail){
+  var d=document.createElement('div'); d.className='log-item '+type;
   d.innerHTML='<span class="li-icon">'+icon+'</span><span class="li-text"><span>'+main+'</span> '+detail+'</span>';
   logList.appendChild(d); logList.scrollTop=logList.scrollHeight;
 }
-
 function mimeToExt(mime){
   if(!mime) return '';
-  const map={'image/jpeg':'.jpg','image/png':'.png','image/gif':'.gif','image/webp':'.webp',
-    'image/svg+xml':'.svg','image/tiff':'.tiff','application/pdf':'.pdf',
-    'application/zip':'.zip','video/mp4':'.mp4'};
+  var map={'image/jpeg':'.jpg','image/png':'.png','image/gif':'.gif','image/webp':'.webp','image/svg+xml':'.svg','application/pdf':'.pdf','application/zip':'.zip','video/mp4':'.mp4'};
   return map[mime]||'';
 }
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function showAlert(box,el,msg){ box.classList.add('visible'); el.textContent=msg; }
-function hideStep1(){ [progressBox1,errorBox1,warningBox1,resultsBox1].forEach(e=>e.classList.remove('visible')); }
-function hideStep2(){ [progressBox2,errorBox2,searchResults,indexInfo].forEach(e=>e.classList.remove('visible')); }
-function hideStep2results(){ [searchResults].forEach(e=>e.classList.remove('visible')); }
-function hideStep3(){ [progressBox3,errorBox3,warningBox3,copyLog].forEach(e=>e.classList.remove('visible')); }
 </script>
 </body>
 </html>
