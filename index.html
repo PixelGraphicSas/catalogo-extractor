@@ -264,7 +264,7 @@
       <div class="step-num" id="step2Num">2</div>
       <div>
         <div class="step-title">Buscar en Google Drive</div>
-        <div class="step-desc">Busca cada código como nombre exacto de archivo en la carpeta indicada</div>
+        <div class="step-desc">Indexa la carpeta de Drive y luego busca cada código en el índice local</div>
       </div>
     </div>
 
@@ -276,18 +276,27 @@
       </div>
     </div>
 
-    <button class="btn-full" id="btnSearch" disabled>Buscar códigos en Drive</button>
+    <button class="btn-full" id="btnIndex" disabled>① Indexar carpeta de Drive</button>
 
     <div class="progress-box" id="progressBox2">
       <div class="progress-header">
-        <span class="progress-label">Buscando en Drive…</span>
-        <span class="progress-count" id="progressCount2">0 / 0</span>
+        <span class="progress-label" id="progressLabel2">Indexando carpeta…</span>
+        <span class="progress-count" id="progressCount2"></span>
       </div>
       <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill2"></div></div>
       <div class="progress-status" id="progressStatus2">Preparando…</div>
     </div>
 
+    <div class="file-info" id="indexInfo">
+      <span style="font-size:1rem">🗂️</span>
+      <span class="file-name" id="indexCount"></span>
+      <span class="file-pages" id="indexFolder"></span>
+      <button class="btn-clear" id="btnReindex" title="Reindexar">↺</button>
+    </div>
+
     <div class="alert error" id="errorBox2"><span class="alert-icon">⚠️</span><span class="alert-text" id="errorText2"></span></div>
+
+    <button class="btn-full" id="btnSearch" disabled>② Buscar códigos en el índice</button>
 
     <div class="search-results" id="searchResults">
       <div class="kpi-row">
@@ -423,7 +432,8 @@ btnAuth.addEventListener('click', () => {
       accessToken = resp.access_token;
       btnAuth.classList.add('connected');
       authLabel.textContent = 'Google conectado ✓';
-      if (allCodes.length > 0) btnSearch.disabled = false;
+      if (allCodes.length > 0 && driveIndex) btnSearch.disabled = false;
+      if (allCodes.length > 0) btnIndex.disabled = false;
     }
   }).requestAccessToken();
 });
@@ -453,7 +463,7 @@ async function loadFile(f) {
 btnClear.addEventListener('click', ()=>{
   pdfFile=null; pageResults=[]; allCodes=[]; fileInput.value='';
   fileInfo.classList.remove('visible'); btnExtract.disabled=true; btnExcel.disabled=true;
-  btnSearch.disabled=true; btnCopy.disabled=true; hideStep1();
+  btnSearch.disabled=true; btnCopy.disabled=true; if(typeof btnIndex!=='undefined') btnIndex.disabled=true; hideStep1();
   step2Num.classList.remove('active','done'); step3Num.classList.remove('active','done');
 });
 
@@ -480,7 +490,8 @@ btnExtract.addEventListener('click', async ()=>{
     } else {
       renderStep1(pageResults,total,totalCodes);
       btnExcel.disabled=false; step2Num.classList.add('active');
-      if(accessToken) btnSearch.disabled=false;
+      btnIndex.disabled = !accessToken ? true : false;
+      if(accessToken && driveIndex) btnSearch.disabled=false;
     }
   } catch(err){ progressBox1.classList.remove('visible'); showAlert(errorBox1,errorText1,'Error: '+err.message); }
   finally { btnExtract.disabled=false; }
@@ -517,55 +528,96 @@ function dlStep1Excel(){
 btnExcel.addEventListener('click', dlStep1Excel);
 btnExcel2.addEventListener('click', dlStep1Excel);
 
-// ─── PASO 2 — DRIVE SEARCH ───────────────────────────────────────────────────
-async function driveSearch(name, folderId){
-  // Search by "contains" and then filter client-side to match base name exactly
-  // This handles files like "20340.idms", "20340.jpg", etc.
-  const q=encodeURIComponent("name contains '"+name.replace(/'/g,"\\'")+"' and '"+folderId+"' in parents and trashed=false");
-  const res=await fetch('https://www.googleapis.com/drive/v3/files?q='+q+'&fields=files(id,name,mimeType)&pageSize=20',
-    {headers:{Authorization:'Bearer '+accessToken}});
-  if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||'Drive error '+res.status); }
-  const files=(await res.json()).files||[];
-  // Filter: base name (without extension) must be exactly the code
-  return files.filter(f=>{
-    const baseName = f.name.includes('.') ? f.name.substring(0, f.name.lastIndexOf('.')) : f.name;
-    return baseName === name;
-  });
+// ─── PASO 2 — INDEX + SEARCH ─────────────────────────────────────────────────
+let driveIndex = null; // Map: baseName → {id, name, mimeType}
+
+const btnIndex   = $('btnIndex');
+const indexInfo  = $('indexInfo');
+const indexCount = $('indexCount');
+const indexFolder= $('indexFolder');
+const btnReindex = $('btnReindex');
+const progressLabel2 = $('progressLabel2');
+
+// Indexar: lista TODOS los archivos de la carpeta paginando
+async function indexFolder(folderId){
+  let allFiles = [];
+  let pageToken = null;
+  let page = 1;
+  do {
+    let url = 'https://www.googleapis.com/drive/v3/files'
+      + '?q='+encodeURIComponent("'"+folderId+"' in parents and trashed=false")
+      + '&fields=nextPageToken,files(id,name,mimeType)'
+      + '&pageSize=1000';
+    if(pageToken) url += '&pageToken='+encodeURIComponent(pageToken);
+    const res = await fetch(url, {headers:{Authorization:'Bearer '+accessToken}});
+    if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||'Drive error '+res.status); }
+    const data = await res.json();
+    allFiles = allFiles.concat(data.files||[]);
+    pageToken = data.nextPageToken||null;
+    progressStatus2.textContent = 'Cargando archivos… '+allFiles.length+' encontrados';
+    page++;
+  } while(pageToken);
+  return allFiles;
 }
 
-btnSearch.addEventListener('click', async ()=>{
+btnIndex.addEventListener('click', runIndex);
+btnReindex.addEventListener('click', ()=>{ driveIndex=null; indexInfo.classList.remove('visible'); btnSearch.disabled=true; hideStep2results(); runIndex(); });
+
+async function runIndex(){
   if(!accessToken){ showAlert(errorBox2,errorText2,'Primero conecta con Google (botón arriba).'); return; }
-  if(!allCodes.length){ showAlert(errorBox2,errorText2,'Primero extrae los códigos (Paso 1).'); return; }
   const folderId=folderIdInput.value.trim()||'1Ib2YutpSq2tOZQKqGzhvi6r5c-c64bGC';
-  hideStep2(); btnSearch.disabled=true; progressBox2.classList.add('visible'); searchReport=[];
+  errorBox2.classList.remove('visible');
+  btnIndex.disabled=true; progressBox2.classList.add('visible');
+  progressLabel2.textContent='Indexando carpeta…'; progressFill2.style.width='0%';
+  progressStatus2.textContent='Conectando con Drive…'; progressCount2.textContent='';
+
+  try {
+    const files = await indexFolder(folderId);
+
+    // Build index: baseName (sin extensión) → file info
+    driveIndex = new Map();
+    files.forEach(f=>{
+      const base = f.name.includes('.') ? f.name.substring(0,f.name.lastIndexOf('.')) : f.name;
+      if(!driveIndex.has(base)) driveIndex.set(base, f); // keep first match
+    });
+
+    progressFill2.style.width='100%';
+    progressBox2.classList.remove('visible');
+
+    indexCount.textContent = files.length+' archivos indexados';
+    indexFolder.textContent = folderId.substring(0,24)+'…';
+    indexInfo.classList.add('visible');
+
+    if(allCodes.length>0) btnSearch.disabled=false;
+
+  } catch(err){
+    progressBox2.classList.remove('visible');
+    showAlert(errorBox2,errorText2,'Error al indexar: '+err.message);
+  } finally { btnIndex.disabled=false; }
+}
+
+btnSearch.addEventListener('click', ()=>{
+  if(!driveIndex){ showAlert(errorBox2,errorText2,'Primero indexa la carpeta (botón ①).'); return; }
+  if(!allCodes.length){ showAlert(errorBox2,errorText2,'Primero extrae los códigos (Paso 1).'); return; }
+
+  hideStep2results(); searchReport=[];
 
   const codePageMap={};
   pageResults.forEach(r=>r.codes.forEach(c=>{ if(!codePageMap[c]) codePageMap[c]=[]; codePageMap[c].push(r.page); }));
 
-  let done=0;
-  try {
-    for(const code of allCodes){
-      progressStatus2.textContent='Buscando '+code+'…';
-      progressCount2.textContent=(done+1)+' / '+allCodes.length;
-      progressFill2.style.width=Math.round((done/allCodes.length)*100)+'%';
-      try {
-        const files=await driveSearch(code,folderId);
-        if(files.length>0) searchReport.push({code,pages:codePageMap[code]||[],found:true,fileId:files[0].id,fileName:files[0].name,mimeType:files[0].mimeType});
-        else searchReport.push({code,pages:codePageMap[code]||[],found:false});
-      } catch(err){
-        if(err.message.includes('401')) throw new Error('Sesión expirada. Vuelve a conectar con Google.');
-        searchReport.push({code,pages:codePageMap[code]||[],found:false,error:err.message});
-      }
-      done++; await new Promise(r=>setTimeout(r,80));
+  allCodes.forEach(code=>{
+    if(driveIndex.has(code)){
+      const f=driveIndex.get(code);
+      searchReport.push({code,pages:codePageMap[code]||[],found:true,fileId:f.id,fileName:f.name,mimeType:f.mimeType});
+    } else {
+      searchReport.push({code,pages:codePageMap[code]||[],found:false});
     }
-    progressFill2.style.width='100%'; progressBox2.classList.remove('visible');
-    renderSearchResults(searchReport);
-    step2Num.classList.remove('active'); step2Num.classList.add('done');
-    step3Num.classList.add('active');
-    // Enable copy if folder chosen and found items exist
-    if(destDirHandle && searchReport.some(r=>r.found)) btnCopy.disabled=false;
-  } catch(err){ progressBox2.classList.remove('visible'); showAlert(errorBox2,errorText2,err.message); }
-  finally { btnSearch.disabled=false; }
+  });
+
+  renderSearchResults(searchReport);
+  step2Num.classList.remove('active'); step2Num.classList.add('done');
+  step3Num.classList.add('active');
+  if(destDirHandle && searchReport.some(r=>r.found)) btnCopy.disabled=false;
 });
 
 function renderSearchResults(report){
@@ -705,7 +757,8 @@ function mimeToExt(mime){
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function showAlert(box,el,msg){ box.classList.add('visible'); el.textContent=msg; }
 function hideStep1(){ [progressBox1,errorBox1,warningBox1,resultsBox1].forEach(e=>e.classList.remove('visible')); }
-function hideStep2(){ [progressBox2,errorBox2,searchResults].forEach(e=>e.classList.remove('visible')); }
+function hideStep2(){ [progressBox2,errorBox2,searchResults,indexInfo].forEach(e=>e.classList.remove('visible')); }
+function hideStep2results(){ [searchResults].forEach(e=>e.classList.remove('visible')); }
 function hideStep3(){ [progressBox3,errorBox3,warningBox3,copyLog].forEach(e=>e.classList.remove('visible')); }
 </script>
 </body>
