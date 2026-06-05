@@ -519,11 +519,18 @@ btnExcel2.addEventListener('click', dlStep1Excel);
 
 // ─── PASO 2 — DRIVE SEARCH ───────────────────────────────────────────────────
 async function driveSearch(name, folderId){
-  const q=encodeURIComponent("name='"+name.replace(/'/g,"\\'")+"' and '"+folderId+"' in parents and trashed=false");
-  const res=await fetch('https://www.googleapis.com/drive/v3/files?q='+q+'&fields=files(id,name,mimeType)&pageSize=5',
+  // Search by "contains" and then filter client-side to match base name exactly
+  // This handles files like "20340.idms", "20340.jpg", etc.
+  const q=encodeURIComponent("name contains '"+name.replace(/'/g,"\\'")+"' and '"+folderId+"' in parents and trashed=false");
+  const res=await fetch('https://www.googleapis.com/drive/v3/files?q='+q+'&fields=files(id,name,mimeType)&pageSize=20',
     {headers:{Authorization:'Bearer '+accessToken}});
   if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||'Drive error '+res.status); }
-  return (await res.json()).files||[];
+  const files=(await res.json()).files||[];
+  // Filter: base name (without extension) must be exactly the code
+  return files.filter(f=>{
+    const baseName = f.name.includes('.') ? f.name.substring(0, f.name.lastIndexOf('.')) : f.name;
+    return baseName === name;
+  });
 }
 
 btnSearch.addEventListener('click', async ()=>{
